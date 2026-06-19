@@ -20,6 +20,7 @@ import { FeaturesCarousel } from '@/components/home/FeaturesCarousel';
 import { CouponCarousel } from '@/components/home/CouponCarousel';
 import { WhatsAppButton } from '@/components/common/WhatsAppButton';
 import { SilkShowcaseCanvas } from '@/components/home/SilkShowcaseCanvas';
+import { SectionDivider } from '@/components/common/SectionDivider';
 
 interface HomeClientProps {
     initialCategories: Category[];
@@ -451,6 +452,15 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                     <div className="animate-in fade-in slide-in-from-top-4 duration-700">
                         <FeaturesCarousel features={companyDetails?.features} />
                     </div>
+
+                    <SectionDivider />
+
+                    {/* Interactive 3D Fabric Explorer */}
+                    <div className="w-full relative z-10 my-4">
+                        <SilkShowcaseCanvas />
+                    </div>
+
+                    <SectionDivider />
 
                     {activeCategoryId && activeCategory && (
                         <section id="first-category-products" className="space-y-14 pb-24 scroll-mt-24">
