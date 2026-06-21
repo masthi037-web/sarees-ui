@@ -49,7 +49,7 @@ export function GlobalBackgroundAnimation() {
     const threadMaterial = new THREE.LineBasicMaterial({
       color: new THREE.Color("#CA8A04"), // Warm gold thread color
       transparent: true,
-      opacity: 0.18,
+      opacity: 0.35,
       blending: THREE.NormalBlending,
     });
 
@@ -112,7 +112,7 @@ export function GlobalBackgroundAnimation() {
       color: new THREE.Color("#FDE68A"), // Shimmering light gold
       size: 0.18,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.70,
       map: particleTexture,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
@@ -245,8 +245,7 @@ export function GlobalBackgroundAnimation() {
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-22"
-      style={{ mixBlendMode: "multiply" }}
+      className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-65"
     >
       <canvas ref={canvasRef} className="w-full h-full block" />
     </div>

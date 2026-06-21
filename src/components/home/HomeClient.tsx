@@ -316,7 +316,7 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
     }
 
     return (
-        <div className="bg-background min-h-screen">
+        <div className="bg-transparent min-h-screen">
             <div className="relative space-y-14 pb-20">
 
                 {(initialCategories.length > 0 || activeCategories.length > 0) && (

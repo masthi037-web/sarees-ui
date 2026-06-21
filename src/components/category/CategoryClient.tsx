@@ -342,7 +342,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
     const famousProducts = allFamousProducts.slice(0, 8);
 
     return (
-        <div className="bg-background min-h-screen pt-20 pb-20">
+        <div className="bg-transparent min-h-screen pt-20 pb-20">
             {initialCategories.length > 0 && (
                 <ProductInitializer categories={initialCategories} companyDetails={companyDetails} />
             )}

@@ -69,7 +69,7 @@ export default async function Home() {
     : [];
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-transparent min-h-screen">
       {/* Slider right below navbar */}
       <OfferBannerSlider />
 
