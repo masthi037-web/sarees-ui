@@ -670,7 +670,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             onFocus={() => searchQuery.trim() && setShowSearchDropdown(true)}
                                             className={cn(
-                                                "w-full pl-12 pr-4 py-4 bg-background/80 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/10 focus:shadow-primary/20 rounded-full transition-all duration-500 outline-none text-base placeholder:text-muted-foreground/60 focus:bg-background focus:border-primary/40",
+                                                "w-full pl-12 pr-4 py-4 bg-background/80 backdrop-blur-xl border border-primary/30 hover:border-primary/50 focus:border-primary shadow-[0_4px_16px_rgba(161,31,60,0.04)] focus:shadow-[0_4px_20px_rgba(161,31,60,0.12)] rounded-full transition-all duration-500 outline-none text-base placeholder:text-muted-foreground/60 focus:bg-background",
                                                 tenant.id.toLowerCase().includes('anantha') && "border-primary/20"
                                             )}
                                         />

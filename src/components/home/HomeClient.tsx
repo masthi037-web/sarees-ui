@@ -331,71 +331,75 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
 
                 <div className="container mx-auto px-4 relative z-10 space-y-20">
                     <section id="shop-now" className="scroll-mt-24">
-                        <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-                            <div className="bg-[#f9f6f0] relative border border-[#f2f2f2] p-6 md:p-8 rounded-none">
-                                <div className="flex flex-col gap-8">
-                                    <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                                        <div className="max-w-2xl space-y-4">
-                                            <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-4 py-1.5">
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">Editorial Selection</span>
-                                            </div>
-                                            <h2
-                                                className="max-w-3xl text-3xl md:text-5xl font-headline leading-tight text-[#1a1a1a]"
-                                                style={{
-                                                    fontWeight: '600',
-                                                    letterSpacing: '0.02em'
-                                                }}
-                                            >
-                                                Draped in heritage, <br />
-                                                <span className="font-script text-primary text-3xl md:text-4xl capitalize tracking-normal block mt-2">styled like a modern boutique.</span>
-                                            </h2>
-                                            <p className="max-w-xl text-xs md:text-sm leading-relaxed text-[#555]">
-                                                We reworked the storefront into a richer fashion editorial experience: deeper contrast, more dramatic product framing, curated rails, and premium browsing moments for every collection.
-                                            </p>
+                        <div className="bg-[#f9f6f0] relative border border-[#f2f2f2] p-6 md:p-8 rounded-none">
+                            <div className="flex flex-col gap-8">
+                                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                                    <div className="max-w-2xl space-y-4">
+                                        <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-4 py-1.5">
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">Editorial Selection</span>
                                         </div>
+                                        <h2
+                                            className="max-w-3xl text-3xl md:text-5xl font-headline leading-tight text-[#1a1a1a]"
+                                            style={{
+                                                fontWeight: '600',
+                                                letterSpacing: '0.02em'
+                                            }}
+                                        >
+                                            Draped in heritage, <br />
+                                            <span className="font-script text-primary text-3xl md:text-4xl capitalize tracking-normal block mt-2">styled like a modern boutique.</span>
+                                        </h2>
+                                        <p className="max-w-xl text-xs md:text-sm leading-relaxed text-[#555]">
+                                            We reworked the storefront into a richer fashion editorial experience: deeper contrast, more dramatic product framing, curated rails, and premium browsing moments for every collection.
+                                        </p>
+                                    </div>
 
-                                        <div className="grid grid-cols-3 gap-3 md:min-w-[260px]">
-                                            {heroStats.map((stat) => (
-                                                <div key={stat.label} className="rounded-none border border-[#f2f2f2] bg-white px-3 py-4 text-center">
-                                                    <div className="font-headline text-3xl font-bold text-primary">{stat.value}</div>
-                                                    <div className="mt-1 text-[9px] uppercase tracking-wider text-muted-foreground">{stat.label}</div>
-                                                </div>
-                                            ))}
+                                    <div className="grid grid-cols-3 gap-3 md:min-w-[260px]">
+                                        {heroStats.map((stat) => (
+                                            <div key={stat.label} className="rounded-none border border-[#f2f2f2] bg-white px-3 py-4 text-center">
+                                                <div className="font-headline text-3xl font-bold text-primary">{stat.value}</div>
+                                                <div className="mt-1 text-[9px] uppercase tracking-wider text-muted-foreground">{stat.label}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-4 md:grid-cols-[0.95fr_1.05fr]">
+                                    <div className="rounded-none border border-[#f2f2f2] bg-white px-5 py-6 text-[#1a1a1a]">
+                                        <div className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/60 font-semibold mb-4">Category Atlas</div>
+                                        <div className="flex flex-wrap gap-2.5">
+                                            {visibleCategories.map((category) => {
+                                                const isActive = !categoryPage && (selectedCategory || firstCategoryId) === category.id;
+
+                                                return (
+                                                    <button
+                                                        key={category.id}
+                                                        onClick={() => handleCategoryClick(category.id)}
+                                                        className={cn(
+                                                            "group flex items-center gap-3 rounded-none border px-3 py-2 transition-all duration-300",
+                                                            isActive
+                                                                ? "border-primary bg-primary text-white"
+                                                                : "border-[#f2f2f2] bg-white hover:border-primary text-[#1a1a1a]"
+                                                        )}
+                                                    >
+                                                        <div className="rounded-none h-9 w-9 overflow-hidden border border-[#f2f2f2] bg-white shrink-0">
+                                                            {category.categoryImage ? (
+                                                                <img src={resolveImageUrl(category.categoryImage)} alt={category.name} className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                <div className="flex h-full w-full items-center justify-center text-primary">
+                                                                    <Sparkles className="h-3 w-3" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-left text-[10px] font-bold uppercase tracking-wider">{category.name}</span>
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
-                                    <div className="grid gap-4 md:grid-cols-[0.95fr_1.05fr]">
-                                        <div className="rounded-none border border-[#f2f2f2] bg-white px-5 py-6 text-[#1a1a1a]">
-                                            <div className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/60 font-semibold mb-4">Category Atlas</div>
-                                            <div className="flex flex-wrap gap-2.5">
-                                                {visibleCategories.map((category) => {
-                                                    const isActive = !categoryPage && (selectedCategory || firstCategoryId) === category.id;
-
-                                                    return (
-                                                        <button
-                                                            key={category.id}
-                                                            onClick={() => handleCategoryClick(category.id)}
-                                                            className={cn(
-                                                                "group flex items-center gap-3 rounded-none border px-3 py-2 transition-all duration-300",
-                                                                isActive
-                                                                    ? "border-primary bg-primary text-white"
-                                                                    : "border-[#f2f2f2] bg-white hover:border-primary text-[#1a1a1a]"
-                                                            )}
-                                                        >
-                                                            <div className="rounded-none h-9 w-9 overflow-hidden border border-[#f2f2f2] bg-white shrink-0">
-                                                                {category.categoryImage ? (
-                                                                    <img src={resolveImageUrl(category.categoryImage)} alt={category.name} className="h-full w-full object-cover" />
-                                                                ) : (
-                                                                    <div className="flex h-full w-full items-center justify-center text-primary">
-                                                                        <Sparkles className="h-3 w-3" />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <span className="text-left text-[10px] font-bold uppercase tracking-wider">{category.name}</span>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
+                                    <div className="rounded-none border border-[#f2f2f2] bg-white p-5">
+                                        <div className="mb-4 flex items-center justify-between">
+                                            <div className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/60 font-semibold">Spotlight Rail</div>
                                         </div>
 
                                         <div className="grid gap-4 sm:grid-cols-2">
@@ -424,35 +428,6 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                                                 </button>
                                             ))}
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
-                                <div className="rounded-none border border-[#f2f2f2] bg-white p-6">
-                                    <div className="text-[10px] uppercase tracking-wider text-primary font-bold">House Codes</div>
-                                    <div className="mt-4 space-y-4">
-                                        {heroStats.map((stat, index) => (
-                                            <div key={stat.label} className="flex items-center justify-between border-b border-[#f2f2f2] pb-4 last:border-b-0 last:pb-0">
-                                                <div>
-                                                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{stat.label}</div>
-                                                    <div className="mt-0.5 text-xs text-[#1a1a1a] font-medium">Luxury-first browsing experience</div>
-                                                </div>
-                                                <div className="font-headline text-3xl text-primary/75">0{index + 1}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="overflow-hidden rounded-none border border-[#f2f2f2] bg-[#f9f6f0] text-[#1a1a1a]">
-                                    <div className="p-6">
-                                        <div className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/60 font-semibold">Brand Promise</div>
-                                        <h3 className="mt-3 font-headline text-2xl font-bold leading-tight">Crafted for premium discovery.</h3>
-                                        <p className="mt-3 text-xs leading-relaxed text-[#555]">Each page is being reworked toward a richer fashion-commerce feel: mood, contrast, and product-first storytelling instead of basic marketplace blocks.</p>
-                                    </div>
-                                    <div className="grid grid-cols-3 border-t border-[#f2f2f2] text-center text-[10px] uppercase tracking-wider text-[#1a1a1a]/70 font-semibold bg-white">
-                                        <div className="px-3 py-3.5">Luxury</div>
-                                        <div className="border-x border-[#f2f2f2] px-3 py-3.5">Curated</div>
-                                        <div className="px-3 py-3.5">Modern</div>
                                     </div>
                                 </div>
                             </div>
@@ -581,33 +556,17 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-                                        <div className="rounded-none border border-[#f2f2f2] bg-white p-6">
-                                            <div className="mb-6 flex items-center justify-between">
-                                                <div>
-                                                    <div className="text-[10px] uppercase tracking-wider text-primary font-bold">Spotlight Rail</div>
-                                                    <h4 className="mt-2 font-headline text-3xl font-bold text-[#1a1a1a]">Front-row picks</h4>
-                                                </div>
-                                            </div>
-                                            <div className="grid gap-4 md:grid-cols-2">
-                                                {spotlightProducts.map((product) => (
-                                                    <ProductCard key={product.id} product={product} hideDescription={true} />
-                                                ))}
+                                    <div className="rounded-none border border-[#f2f2f2] bg-white p-6">
+                                        <div className="mb-6 flex items-center justify-between">
+                                            <div>
+                                                <div className="text-[10px] uppercase tracking-wider text-primary font-bold">Spotlight Rail</div>
+                                                <h4 className="mt-2 font-headline text-3xl font-bold text-[#1a1a1a]">Front-row picks</h4>
                                             </div>
                                         </div>
-
-                                        <div className="rounded-none border border-[#f2f2f2] bg-[#f9f6f0] p-6 text-[#1a1a1a]">
-                                            <div className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/60 font-semibold">Collection Notes</div>
-                                            <h4 className="mt-3 font-headline text-3xl font-bold leading-tight">Luxury layers, stronger hierarchy.</h4>
-                                            <p className="mt-3 text-xs leading-relaxed text-[#555]">This section has been restructured into spotlight picks, curated rails, and a more cinematic grid so the homepage reads like a premium brand presentation.</p>
-                                            <div className="mt-6 grid gap-3">
-                                                {heroStats.map((stat) => (
-                                                    <div key={stat.label} className="flex items-center justify-between rounded-none border border-[#f2f2f2] bg-white px-4 py-3">
-                                                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{stat.label}</span>
-                                                        <span className="font-headline text-3xl font-bold text-primary">{stat.value}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                            {spotlightProducts.map((product) => (
+                                                <ProductCard key={product.id} product={product} hideDescription={true} />
+                                            ))}
                                         </div>
                                     </div>
 
