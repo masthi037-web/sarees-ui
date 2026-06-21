@@ -425,19 +425,21 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                 })
             );
         }
-        if (isTirumala && selectedCatalogs.length > 0 && activeCategory) {
-            return activeCategory.catalogs
-                .filter(catalog => selectedCatalogs.includes(catalog.id))
-                .flatMap(catalog =>
-                    catalog.products.map(p => {
-                        const image = imageMap.get(p.imageId);
-                        return {
-                            ...p,
-                            imageHint: image?.imageHint || 'product image',
-                            imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
-                        };
-                    })
-                );
+        if (isTirumala && activeCategory) {
+            const targetCatalogs = selectedCatalogs.length > 0
+                ? activeCategory.catalogs.filter(catalog => selectedCatalogs.includes(catalog.id))
+                : activeCategory.catalogs;
+
+            return targetCatalogs.flatMap(catalog =>
+                catalog.products.map(p => {
+                    const image = imageMap.get(p.imageId);
+                    return {
+                        ...p,
+                        imageHint: image?.imageHint || 'product image',
+                        imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
+                    };
+                })
+            );
         }
         if (selectedCatalog) {
             return selectedCatalog.products.map(p => {
