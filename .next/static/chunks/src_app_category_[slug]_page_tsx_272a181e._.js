@@ -2,10 +2,8 @@
     script: typeof document === "object" ? document.currentScript : undefined,
     chunks: [
   "static/chunks/src_hooks_use-wishlist_ts_436cc47d._.js",
-  "static/chunks/src_81e1c156._.js",
-  "static/chunks/node_modules_three_build_three_core_996ef05a.js",
-  "static/chunks/node_modules_three_build_three_module_0c59ee63.js",
-  "static/chunks/node_modules_fa984d74._.js"
+  "static/chunks/src_58fe981a._.js",
+  "static/chunks/node_modules_4300e89f._.js"
 ],
     source: "dynamic"
 });

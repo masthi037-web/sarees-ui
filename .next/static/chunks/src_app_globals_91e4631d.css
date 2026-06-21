@@ -880,6 +880,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-right: .875rem;
 }
 
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -903,6 +908,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .my-4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.my-8 {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .my-auto {
@@ -1989,6 +1999,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .rotate-180 {
   --tw-rotate: 180deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.rotate-45 {
+  --tw-rotate: 45deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -3600,6 +3615,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
 
+.bg-gradient-to-l {
+  background-image: linear-gradient(to left, var(--tw-gradient-stops));
+}
+
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -3734,6 +3753,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.via-\[\#CA8A04\]\/40 {
+  --tw-gradient-to: rgba(202, 138, 4, 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(202, 138, 4, .4) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
 .via-border {
   --tw-gradient-to: hsl(var(--border) / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--border)) var(--tw-gradient-via-position), var(--tw-gradient-to);
@@ -3792,6 +3816,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .via-white\/20 {
   --tw-gradient-to: rgba(255, 255, 255, 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), rgba(255, 255, 255, .2) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+.to-\[\#CA8A04\] {
+  --tw-gradient-to: #ca8a04 var(--tw-gradient-to-position);
 }
 
 .to-accent\/5 {
@@ -3881,6 +3909,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .fill-\[\#059669\] {
   fill: #059669;
+}
+
+.fill-\[\#CA8A04\] {
+  fill: #ca8a04;
 }
 
 .fill-accent {
@@ -4606,6 +4638,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .text-\[\#888\] {
   --tw-text-opacity: 1;
   color: rgba(136, 136, 136, var(--tw-text-opacity, 1));
+}
+
+.text-\[\#CA8A04\] {
+  --tw-text-opacity: 1;
+  color: rgba(202, 138, 4, var(--tw-text-opacity, 1));
+}
+
+.text-\[\#CA8A04\]\/60 {
+  color: rgba(202, 138, 4, .6);
 }
 
 .text-\[\#e53b49\] {
@@ -6835,6 +6876,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.group:hover .group-hover\:rotate-180 {
+  --tw-rotate: 180deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .group:hover .group-hover\:rotate-90 {
   --tw-rotate: 90deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -6931,6 +6977,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1), 0 8px 10px -6px rgba(0, 0, 0, .1);
   --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 rgba(0, 0, 0, 0)), var(--tw-ring-shadow, 0 0 rgba(0, 0, 0, 0)), var(--tw-shadow);
+}
+
+.group:hover .group-hover\:drop-shadow-\[0_0_8px_rgba\(202\,138\,4\,0\.5\)\] {
+  --tw-drop-shadow: drop-shadow(0 0 8px rgba(202, 138, 4, .5));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .group:disabled .group-disabled\:text-muted-foreground\/50 {
@@ -7696,6 +7747,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
   .md\:col-span-4 {
     grid-column: span 4 / span 4;
+  }
+
+  .md\:my-12 {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
   }
 
   .md\:block {
