@@ -18,7 +18,7 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   // Use middleware-provided domain or fallback
-  const companyDomain = headersList.get('x-company-domain') || 'babaihomefoods';
+  const companyDomain = headersList.get('x-company-domain') || 'tirumalasarees';
 
   return (
     <html lang="en" className="h-full scroll-smooth">

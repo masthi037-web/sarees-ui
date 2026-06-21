@@ -245,7 +245,7 @@ export function ProfileSheet({ children }: { children: React.ReactNode }) {
         setIsLoading(true);
         setFeedback(null);
         try {
-            const response = await authService.login(phoneNumber, otp, domain || 'babaihomefoods', companyDetails?.manaBuyCredentials);
+            const response = await authService.login(phoneNumber, otp, domain || 'tirumalasarees', companyDetails?.manaBuyCredentials);
 
             // Reset attempts on success
             localStorage.removeItem('login_attempts_count');
