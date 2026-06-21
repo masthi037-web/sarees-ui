@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Heart, User, ShoppingCart, Search, ShoppingBag, History, Home, Settings, ClipboardList } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, slugify } from '@/lib/utils';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { useCart } from '@/hooks/use-cart';
 import { useRef, useState, useEffect } from 'react';
@@ -43,7 +43,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const { products: allProducts } = useProduct();
+  const { products: allProducts, categories } = useProduct();
   const { text } = useTenant();
 
   /* Hydration fix: Ensure client-only values match server on first render */
@@ -221,9 +221,25 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
             <Link href="/" className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent", pathname === '/' && "text-primary border-primary")}>
               Home
             </Link>
-            <Link href="/category/sarees" className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent", pathname === '/category/sarees' && "text-primary border-primary")}>
-              Sarees
-            </Link>
+            {mounted && categories.length > 0 ? (
+              categories.map(category => {
+                const catSlug = slugify(category.name);
+                const isActive = pathname === `/category/${category.id}` || pathname === `/category/${catSlug}`;
+                return (
+                  <Link
+                    key={category.id}
+                    href={`/category/${catSlug}`}
+                    className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent", isActive && "text-primary border-primary")}
+                  >
+                    {category.name}
+                  </Link>
+                );
+              })
+            ) : (
+              <Link href="/category/sarees" className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent", pathname === '/category/sarees' && "text-primary border-primary")}>
+                Sarees
+              </Link>
+            )}
             <Link href="/" className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent")}>
               New Arrivals
             </Link>

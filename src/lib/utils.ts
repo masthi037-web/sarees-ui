@@ -14,6 +14,11 @@ export function resolveImageUrl(path: string | undefined | null): string {
 
   if (firstPath.startsWith('http') || firstPath.startsWith('blob:')) return firstPath;
 
+  // If it is a local public asset path (like /offer_banner_1.png)
+  if (firstPath.startsWith('/') && !firstPath.startsWith('/uploads') && !firstPath.startsWith('/media')) {
+    return firstPath;
+  }
+
   // Ensure we don't double slash
   const cleanPath = firstPath.startsWith('/') ? firstPath.slice(1) : firstPath;
   return `https://api.manabuy.in/${cleanPath}`;

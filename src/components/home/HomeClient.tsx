@@ -16,6 +16,7 @@ import { CompanyDetails } from '@/lib/api-types';
 import { ProductInitializer } from '@/components/providers/ProductInitializer';
 import { useProduct } from '@/hooks/use-product';
 import { useTenant } from '@/components/providers/TenantContext';
+import { MOCK_TENANT_CATEGORIES } from '@/data/mock-tenant-data';
 import { FeaturesCarousel } from '@/components/home/FeaturesCarousel';
 import { CouponCarousel } from '@/components/home/CouponCarousel';
 import { WhatsAppButton } from '@/components/common/WhatsAppButton';
@@ -32,6 +33,15 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
     const router = useRouter();
 
     const { categories, setCategories, isCategoryExpired, markCategoryAsFetched } = useProduct();
+    
+    const activeCategories = useMemo(() => {
+        const baseCats = initialCategories.length > 0 ? initialCategories : categories;
+        if (baseCats.length === 0) {
+            return MOCK_TENANT_CATEGORIES;
+        }
+        return baseCats;
+    }, [initialCategories, categories]);
+
     const tenant = useTenant();
     const { theme, categoryPage, text, typography } = tenant;
     const categoryShape = theme?.categoryFrame || 'circle';
@@ -68,7 +78,7 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
 
     const handleCategoryClick = (categoryId: string) => {
         if (categoryPage) {
-            const category = categories.find(c => c.id === categoryId);
+            const category = activeCategories.find(c => c.id === categoryId);
             const urlSlug = category ? slugify(category.name) : categoryId;
             router.push(`/category/${urlSlug}`);
         } else {
@@ -86,11 +96,11 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
     };
 
     // --- Dynamic Category Product Grid Logic ---
-    const firstCategoryId = categories.length > 0 ? categories[0].id : undefined;
+    const firstCategoryId = activeCategories.length > 0 ? activeCategories[0].id : undefined;
 
     // If categoryPage is false, display the selected category. Otherwise, always display the first.
     const activeCategoryId = categoryPage ? firstCategoryId : (selectedCategory || firstCategoryId);
-    const activeCategory = categories.find(c => c.id === activeCategoryId);
+    const activeCategory = activeCategories.find(c => c.id === activeCategoryId);
 
     const [isLoadingCategory, setIsLoadingCategory] = useState<Record<string, boolean>>({});
     const fetchingRef = useRef<Record<string, boolean>>({});
@@ -146,7 +156,7 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
         if (activeCategoryId) {
             loadCategoryData(activeCategoryId);
         }
-    }, [activeCategoryId, categories.length > 0]);
+    }, [activeCategoryId, activeCategories.length > 0]);
 
     const catalogs: Catalog[] = activeCategory ? activeCategory.catalogs : [];
     const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null);
@@ -271,7 +281,7 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
         router.push(`/product/${productId}`);
     };
 
-    const visibleCategories = tenant.id.toLowerCase().includes('sandhya') ? categories.slice(0, 2) : categories;
+    const visibleCategories = tenant.id.toLowerCase().includes('sandhya') ? activeCategories.slice(0, 2) : activeCategories;
     const spotlightProducts = baseProducts.slice(0, 4);
     const curatedProducts = famousProducts.length > 0 ? famousProducts.slice(0, 3) : baseProducts.slice(0, 3);
     const heroStats = [
@@ -309,8 +319,8 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
         <div className="bg-background min-h-screen">
             <div className="relative space-y-14 pb-20">
 
-                {initialCategories.length > 0 && (
-                    <ProductInitializer categories={initialCategories} companyDetails={companyDetails} />
+                {(initialCategories.length > 0 || activeCategories.length > 0) && (
+                    <ProductInitializer categories={activeCategories} companyDetails={companyDetails} />
                 )}
 
                 {isLoggedIn && userRole?.includes('CUSTOMER') && companyDetails?.companyPhone && (
@@ -452,6 +462,48 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                     <div className="animate-in fade-in slide-in-from-top-4 duration-700">
                         <FeaturesCarousel features={companyDetails?.features} />
                     </div>
+
+                    {/* Categories Showcase Section */}
+                    <section className="py-12 bg-white relative z-10 border-y border-border/20">
+                        <div className="container mx-auto px-4 text-center space-y-10">
+                            <div className="space-y-3">
+                                <span className="font-script text-3xl text-primary block leading-none">Curated Rails</span>
+                                <h2 className="font-headline text-3xl md:text-5xl font-medium tracking-wide text-[#1a1a1a]">Explore Categories</h2>
+                                <div className="w-16 h-px bg-primary/45 mx-auto mt-2" />
+                            </div>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                                {activeCategories.map((category) => {
+                                    const catSlug = slugify(category.name);
+                                    return (
+                                        <div
+                                            key={category.id}
+                                            onClick={() => router.push(`/category/${catSlug}`)}
+                                            className="group cursor-pointer relative overflow-hidden bg-[#f9f6f0] border border-[#f2f2f2] aspect-[3/4] rounded-none shadow-sm hover:shadow-md transition-all duration-500 hover:border-primary"
+                                        >
+                                            {/* Zooming Image */}
+                                            <div className="absolute inset-0 overflow-hidden">
+                                                <img
+                                                    src={resolveImageUrl(category.categoryImage || '') || 'https://picsum.photos/seed/cat/400/500'}
+                                                    alt={category.name}
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                />
+                                                {/* Gradient Overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                            </div>
+                                            
+                                            {/* Text Overlay */}
+                                            <div className="absolute inset-0 flex flex-col justify-end p-6 text-left">
+                                                <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-bold">Collection</span>
+                                                <h3 className="font-headline text-xl font-bold text-white uppercase tracking-wider mt-1">{category.name}</h3>
+                                                <div className="w-8 h-[1px] bg-primary mt-2 group-hover:w-16 transition-all duration-300" />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </section>
 
                     <SectionDivider />
 
