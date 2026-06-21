@@ -395,6 +395,34 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                                                 );
                                             })}
                                         </div>
+
+                                        {/* Editorial Poster Card */}
+                                        <div className="relative overflow-hidden aspect-[4/3] w-full mt-8 group bg-secondary/15 border border-[#f2f2f2]">
+                                            <img
+                                                src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop"
+                                                alt="Heritage Handloom"
+                                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                            />
+                                            {/* Luxury Overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10 flex flex-col justify-end p-6" />
+                                            
+                                            {/* Text Content */}
+                                            <div className="absolute inset-0 p-6 flex flex-col justify-end text-left space-y-2">
+                                                <span className="text-[9px] uppercase tracking-[0.25em] text-primary font-bold">The Heritage Edit</span>
+                                                <h3 className="font-headline text-lg font-bold text-white uppercase tracking-wider">Classic Weaves</h3>
+                                                <p className="text-[11px] text-white/70 font-light leading-relaxed max-w-xs">
+                                                    Discover the finest zari borders and traditional handlooms crafted by master artisans.
+                                                </p>
+                                                <div className="pt-2">
+                                                    <button
+                                                        onClick={() => router.push('/category/sarees')}
+                                                        className="inline-flex items-center text-[10px] uppercase tracking-widest font-bold text-white border-b border-white hover:text-primary hover:border-primary transition-colors pb-0.5"
+                                                    >
+                                                        Explore Legacy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="rounded-none border border-[#f2f2f2] bg-white p-5">
