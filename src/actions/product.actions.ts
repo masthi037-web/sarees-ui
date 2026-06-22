@@ -8,6 +8,7 @@ export async function fetchProductsByCategoryAction(categoryId: string, delivery
     // Defensive check
     if (!catIdStr || catIdStr === 'undefined' || catIdStr === 'null') return null;
 
+    
     console.log(`[ProductAction] Server Action Delegating to ProductService for category (${catIdStr})`);
 
     try {
