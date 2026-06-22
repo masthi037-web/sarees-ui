@@ -8,11 +8,12 @@ import { ShopNowButton } from '@/components/home/ShopNowButton';
 import { cn } from '@/lib/utils';
 import { resolveTenantConfig } from '@/config/tenant-config';
 import { OfferBannerSlider } from '@/components/home/OfferBannerSlider';
+import { SectionDivider } from '@/components/common/SectionDivider';
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
   const headerDomain = headersList.get("x-company-domain");
-  const companyDomain = (headerDomain && headerDomain !== 'localhost') ? headerDomain : 'babaihomefoods';
+  const companyDomain = (headerDomain && headerDomain !== 'localhost') ? headerDomain : 'tirumalasarees';
   
   const tenantConfig = resolveTenantConfig(companyDomain);
   
@@ -41,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const headersList = await headers();
   const headerDomain = headersList.get("x-company-domain");
-  const companyDomain = (headerDomain && headerDomain !== 'localhost') ? headerDomain : 'babaihomefoods';
+  const companyDomain = (headerDomain && headerDomain !== 'localhost') ? headerDomain : 'tirumalasarees';
 
   const company = await fetchCompanyDetails(companyDomain);
   const tenantConfig = resolveTenantConfig(companyDomain);
@@ -68,9 +69,11 @@ export default async function Home() {
     : [];
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-transparent min-h-screen">
       {/* Slider right below navbar */}
       <OfferBannerSlider />
+
+      <SectionDivider />
 
       {/* Hero Section - Kalamandir Split Screen */}
       <section className="relative w-full z-10 bg-white">

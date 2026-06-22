@@ -3,9 +3,7 @@
     chunks: [
   "static/chunks/src_hooks_use-wishlist_ts_436cc47d._.js",
   "static/chunks/src_81e1c156._.js",
-  "static/chunks/node_modules_three_build_three_core_996ef05a.js",
-  "static/chunks/node_modules_three_build_three_module_0c59ee63.js",
-  "static/chunks/node_modules_fa984d74._.js"
+  "static/chunks/node_modules_85631e64._.js"
 ],
     source: "dynamic"
 });

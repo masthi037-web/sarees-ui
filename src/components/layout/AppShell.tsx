@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Footer } from '@/components/layout/Footer';
 import { WishlistSheet } from '@/components/wishlist/WishlistSheet';
 import { GlobalScrollHandler } from '@/components/common/GlobalScrollHandler';
+import { GlobalBackgroundAnimation } from '@/components/common/GlobalBackgroundAnimation';
 
 interface AppShellProps {
     children: React.ReactNode;
@@ -27,6 +28,7 @@ export default async function AppShell({ children, companyDomain }: AppShellProp
     return (
         <ThemeProvider config={tenantConfig}>
             <GlobalScrollHandler />
+            <GlobalBackgroundAnimation />
             {companyDetails && <StoreInitializer companyDetails={companyDetails} />}
             <QueryProvider>
                 <div className="relative flex min-h-full w-full flex-col">

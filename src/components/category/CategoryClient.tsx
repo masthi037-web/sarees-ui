@@ -19,173 +19,7 @@ import { useProduct } from '@/hooks/use-product';
 import { useTenant } from '@/components/providers/TenantContext';
 import { Separator } from '@/components/ui/separator';
 
-const MOCK_SAREES_CATEGORY: Category = {
-  id: 'sarees',
-  name: 'SAREES',
-  categoryImage: '/offer_banner_1.png',
-  catalogs: [
-    {
-      id: 'kanchipuram-silk',
-      name: 'Kanchipuram Silks',
-      products: [
-        {
-          id: 's1',
-          name: 'Kanchipuram Crimson Zari Silk Saree',
-          price: 9500,
-          priceAfterDiscount: 6650,
-          imageId: 'product-s1',
-          productImage: '/offer_banner_1.png',
-          description: 'A magnificent crimson red Kanchipuram silk saree featuring ornate gold zari brocade, perfect for weddings and bridal wear.',
-          rating: 4.9,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: true,
-          productOffer: '30% OFF',
-          pricing: [],
-        },
-        {
-          id: 's2',
-          name: 'Classic Royal Blue Silk Saree',
-          price: 8800,
-          priceAfterDiscount: 6160,
-          imageId: 'product-s2',
-          productImage: '/offer_banner_2.png',
-          description: 'Timeless royal blue silk saree with exquisite gold checks and zari borders. Handcrafted by master weavers.',
-          rating: 4.8,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: true,
-          productOffer: '30% OFF',
-          pricing: [],
-        }
-      ]
-    },
-    {
-      id: 'banarasi-silk',
-      name: 'Banarasi Silks',
-      products: [
-        {
-          id: 's3',
-          name: 'Emerald Floral Banarasi Silk Saree',
-          price: 12000,
-          priceAfterDiscount: 8400,
-          imageId: 'product-s3',
-          productImage: '/offer_banner_3.png',
-          description: 'Exquisite Banarasi silk saree with floral jal motifs and an elegant gold brocade pallu.',
-          rating: 4.9,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: false,
-          productOffer: '30% OFF',
-          pricing: [],
-        },
-        {
-          id: 's4',
-          name: 'Blush Pink Organza Banarasi Saree',
-          price: 6500,
-          priceAfterDiscount: 4875,
-          imageId: 'product-s4',
-          productImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=600&auto=format&fit=crop',
-          description: 'Lightweight and translucent blush pink organza saree featuring beautiful Banarasi border details.',
-          rating: 4.7,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: true,
-          productOffer: '25% OFF',
-          pricing: [],
-        }
-      ]
-    },
-    {
-      id: 'georgette-sarees',
-      name: 'Designer Georgette',
-      products: [
-        {
-          id: 's5',
-          name: 'Midnight Black Sequined Georgette Saree',
-          price: 5200,
-          priceAfterDiscount: 4160,
-          imageId: 'product-s5',
-          productImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=600&auto=format&fit=crop',
-          description: 'Sophisticated black georgette saree embellished with micro-sequins for a glamourous party wear look.',
-          rating: 4.6,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: false,
-          productOffer: '20% OFF',
-          pricing: [],
-        },
-        {
-          id: 's6',
-          name: 'Peach Embroidered Georgette Saree',
-          price: 4900,
-          priceAfterDiscount: 3675,
-          imageId: 'product-s6',
-          productImage: 'https://images.unsplash.com/photo-1610030470298-40b355e71789?q=80&w=600&auto=format&fit=crop',
-          description: 'Flowy peach georgette saree featuring intricate thread work embroidery and scalloped borders.',
-          rating: 4.7,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: true,
-          productOffer: '25% OFF',
-          pricing: [],
-        }
-      ]
-    },
-    {
-      id: 'dailywear-cotton',
-      name: 'Premium Cotton & Linen',
-      products: [
-        {
-          id: 's7',
-          name: 'Mustard Yellow Handloom Linen Saree',
-          price: 3200,
-          priceAfterDiscount: 2560,
-          imageId: 'product-s7',
-          productImage: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?q=80&w=600&auto=format&fit=crop',
-          description: 'Breathable mustard yellow linen saree with silver zari border and tassels, ideal for summer office wear.',
-          rating: 4.8,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: false,
-          productOffer: '20% OFF',
-          pricing: [],
-        },
-        {
-          id: 's8',
-          name: 'Indigo Shibori Handloom Cotton Saree',
-          price: 2800,
-          priceAfterDiscount: 1960,
-          imageId: 'product-s8',
-          productImage: 'https://images.unsplash.com/photo-1583391265517-35bbdad01209?q=80&w=600&auto=format&fit=crop',
-          description: 'Indigo shibori handloom cotton saree with indigo blue base and unique tie dye patterns.',
-          rating: 4.8,
-          deliveryTime: '2-4 days',
-          deliveryCost: 0,
-          createdAt: new Date().toISOString(),
-          variants: [],
-          famous: true,
-          productOffer: '30% OFF',
-          pricing: [],
-        }
-      ]
-    }
-  ]
-};
+import { MOCK_TENANT_CATEGORIES } from '@/data/mock-tenant-data';
 
 interface CategoryClientProps {
     slug: string;
@@ -202,15 +36,14 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
 
     const { categories, setCategories, isCategoryExpired, markCategoryAsFetched } = useProduct();
     
-    // Inject mock sarees category if offline and not loaded from database
+    // Inject mock categories if offline and not loaded from database
     const activeCategories = useMemo(() => {
         const baseCats = initialCategories.length > 0 ? initialCategories : categories;
-        const hasSarees = baseCats.some(c => c.id === 'sarees' || slugify(c.name) === 'sarees');
-        if (slug === 'sarees' && !hasSarees) {
-            return [...baseCats, MOCK_SAREES_CATEGORY];
+        if (baseCats.length === 0) {
+            return MOCK_TENANT_CATEGORIES;
         }
         return baseCats;
-    }, [initialCategories, categories, slug]);
+    }, [initialCategories, categories]);
 
     const isTirumala = tenant.id.toLowerCase().includes('tirumala') || tenant.name.toLowerCase().includes('tirumala');
     const [selectedCatalogs, setSelectedCatalogs] = useState<string[]>([]);
@@ -268,9 +101,11 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
 
             if (matchedCatalog) {
                 setSelectedCatalogId(matchedCatalog.id);
-            } else if (!selectedCatalogId || !category.catalogs.some(c => c.id === selectedCatalogId)) {
-                setSelectedCatalogId(category.catalogs[0].id);
+            } else {
+                setSelectedCatalogId(null);
             }
+        } else {
+            setSelectedCatalogId(null);
         }
     }, [selectedCategory, activeCategories, searchParams]);
 
@@ -425,29 +260,18 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                 })
             );
         }
-        if (isTirumala && selectedCatalogs.length > 0 && activeCategory) {
-            return activeCategory.catalogs
-                .filter(catalog => selectedCatalogs.includes(catalog.id))
-                .flatMap(catalog =>
-                    catalog.products.map(p => {
-                        const image = imageMap.get(p.imageId);
-                        return {
-                            ...p,
-                            imageHint: image?.imageHint || 'product image',
-                            imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
-                        };
-                    })
-                );
-        }
-        if (selectedCatalog) {
-            return selectedCatalog.products.map(p => {
-                const image = imageMap.get(p.imageId);
-                return {
-                    ...p,
-                    imageHint: image?.imageHint || 'product image',
-                    imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
-                };
-            });
+        if (selectedCatalogId && activeCategory) {
+            const catalog = activeCategory.catalogs.find(c => c.id === selectedCatalogId);
+            if (catalog) {
+                return catalog.products.map(p => {
+                    const image = imageMap.get(p.imageId);
+                    return {
+                        ...p,
+                        imageHint: image?.imageHint || 'product image',
+                        imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
+                    };
+                });
+            }
         }
         if (activeCategory) {
             return activeCategory.catalogs.flatMap(catalog =>
@@ -518,7 +342,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
     const famousProducts = allFamousProducts.slice(0, 8);
 
     return (
-        <div className="bg-background min-h-screen pt-20 pb-20">
+        <div className="bg-transparent min-h-screen pt-20 pb-20">
             {initialCategories.length > 0 && (
                 <ProductInitializer categories={initialCategories} companyDetails={companyDetails} />
             )}
@@ -579,116 +403,198 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                 )}
 
                 {activeCategory ? (
-                    isTirumala ? (
-                        <div className="md:grid md:grid-cols-[260px_1fr] md:gap-8 items-start pt-6 space-y-8 md:space-y-0">
-                            {/* Left Sidebar - Filters (Desktop only) */}
-                            <aside className="hidden md:block sticky top-24 self-start bg-white border border-[#f2f2f2] p-6 space-y-6">
-                                <div>
-                                    <h3 className="font-headline text-lg font-bold uppercase tracking-wider text-[#1a1a1a] mb-4">Filters</h3>
-                                    <div className="w-10 h-0.5 bg-primary mb-6" />
-                                </div>
-                                
-                                {/* Filter by Fabric / Sub-collection */}
-                                <div className="space-y-3">
-                                    <h4 className="font-headline text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Fabric / Collection</h4>
-                                    <div className="space-y-2 pt-1">
-                                        <label className="flex items-center gap-2.5 text-xs text-[#555] cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedCatalogs.length === 0}
-                                                onChange={() => setSelectedCatalogs([])}
-                                                className="rounded-none border-[#ccc] text-primary focus:ring-primary h-4 w-4"
-                                            />
-                                            <span className={cn("group-hover:text-[#1a1a1a] transition-colors", selectedCatalogs.length === 0 && "font-bold text-[#1a1a1a]")}>All Sarees</span>
-                                        </label>
-                                        {catalogs.map(cat => (
-                                            <label key={cat.id} className="flex items-center gap-2.5 text-xs text-[#555] cursor-pointer group">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedCatalogs.includes(cat.id)}
-                                                    onChange={() => handleToggleCatalog(cat.id)}
-                                                    className="rounded-none border-[#ccc] text-primary focus:ring-primary h-4 w-4"
-                                                />
-                                                <span className={cn("group-hover:text-[#1a1a1a] transition-colors", selectedCatalogs.includes(cat.id) && "font-bold text-[#1a1a1a]")}>{cat.name}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
+                    selectedCatalogId === null ? (
+                        <div className="space-y-10 animate-in fade-in duration-500">
+                            <div className="space-y-3 text-center max-w-2xl mx-auto mb-12">
+                                <span className="font-script text-3xl text-primary block leading-none">Collections</span>
+                                <h2 className="font-headline text-3xl md:text-5xl font-medium tracking-wide text-foreground">Select a Collection</h2>
+                                <div className="w-16 h-px bg-primary/45 mx-auto mt-2" />
+                                <p className="text-xs text-[#555] font-light mt-4">Discover our handpicked weaves, tailored designs, and premium styles curated for you.</p>
+                            </div>
 
-                                <Separator className="bg-[#f2f2f2]" />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                                {catalogs.map((catalog) => {
+                                    const firstProd = catalog.products[0];
+                                    const displayImage = catalog.catalogueImage 
+                                        ? resolveImageUrl(catalog.catalogueImage)
+                                        : (firstProd ? resolveImageUrl(firstProd.productImage || (firstProd.images && firstProd.images.length > 0 ? firstProd.images[0] : '')) : '');
 
-                                {/* Filter by Price */}
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="font-headline text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Price Range</h4>
-                                    </div>
-                                    <div className="space-y-2 pt-1">
-                                        {[
-                                            { label: 'All Prices', min: 0, max: 20000 },
-                                            { label: 'Under ₹3,000', min: 0, max: 3000 },
-                                            { label: '₹3,000 - ₹6,000', min: 3000, max: 6000 },
-                                            { label: '₹6,000 - ₹10,000', min: 6000, max: 10000 },
-                                            { label: 'Above ₹10,000', min: 10000, max: 20000 },
-                                        ].map((range, idx) => {
-                                            const isSelected = filters.priceRange[0] === range.min && filters.priceRange[1] === range.max;
-                                            return (
-                                                <label key={idx} className="flex items-center gap-2.5 text-xs text-[#555] cursor-pointer group">
-                                                    <input
-                                                        type="radio"
-                                                        name="price-range"
-                                                        checked={isSelected}
-                                                        onChange={() => setFilters({ ...filters, priceRange: [range.min, range.max] })}
-                                                        className="rounded-full border-[#ccc] text-primary focus:ring-primary h-4 w-4"
+                                    return (
+                                        <div
+                                            key={catalog.id}
+                                            onClick={() => handleSelectCatalog(catalog.id)}
+                                            className="group cursor-pointer relative overflow-hidden bg-[#f9f6f0] border border-[#f2f2f2] aspect-[3/4] rounded-none shadow-sm hover:shadow-md transition-all duration-500 hover:border-primary animate-in fade-in slide-in-from-bottom-4"
+                                        >
+                                            {/* Zooming Image */}
+                                            <div className="absolute inset-0 overflow-hidden bg-secondary/10">
+                                                {displayImage ? (
+                                                    <img
+                                                        src={displayImage}
+                                                        alt={catalog.name}
+                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                     />
-                                                    <span className={cn("group-hover:text-[#1a1a1a] transition-colors", isSelected && "font-bold text-[#1a1a1a]")}>{range.label}</span>
-                                                </label>
-                                            );
-                                        })}
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-primary/40 bg-secondary/20">
+                                                        <Sparkles className="w-8 h-8 animate-pulse" />
+                                                    </div>
+                                                )}
+                                                {/* Gradient Overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                            </div>
+                                            
+                                            {/* Text Overlay */}
+                                            <div className="absolute inset-0 flex flex-col justify-end p-6 text-left">
+                                                <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-bold">{catalog.products.length} Items</span>
+                                                <h3 className="font-headline text-lg font-bold text-white uppercase tracking-wider mt-1">{catalog.name}</h3>
+                                                <div className="w-8 h-[1px] bg-primary mt-2 group-hover:w-16 transition-all duration-300" />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : (
+                        isTirumala ? (
+                            <div className="md:grid md:grid-cols-[260px_1fr] md:gap-8 items-start pt-6 space-y-8 md:space-y-0">
+                                {/* Left Sidebar - Filters (Desktop only) */}
+                                <aside className="hidden md:block sticky top-24 self-start bg-white border border-[#f2f2f2] p-6 space-y-6">
+                                    <div>
+                                        <h3 className="font-headline text-lg font-bold uppercase tracking-wider text-[#1a1a1a] mb-4">Filters</h3>
+                                        <div className="w-10 h-0.5 bg-primary mb-6" />
                                     </div>
-                                </div>
-
-                                <Separator className="bg-[#f2f2f2]" />
-
-                                {/* Filter by Ratings */}
-                                <div className="space-y-3">
-                                    <h4 className="font-headline text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Ratings</h4>
-                                    <div className="flex flex-col gap-2 pt-1">
-                                        {[4, 3, 2].map((rating) => {
-                                            const isSelected = filters.minRating === rating;
-                                            return (
-                                                <button
-                                                    key={rating}
-                                                    onClick={() => setFilters({ ...filters, minRating: isSelected ? null : rating })}
-                                                    className={cn(
-                                                        "text-left text-xs px-3 py-1.5 border transition-all duration-300 w-full",
-                                                        isSelected 
-                                                            ? "border-primary bg-primary/5 text-primary font-bold" 
-                                                            : "border-[#f2f2f2] text-[#555] hover:border-primary hover:text-primary"
-                                                    )}
-                                                >
-                                                    {rating}+ Stars & Above
-                                                </button>
-                                            );
-                                        })}
+                                    
+                                    {/* Filter by Fabric / Sub-collection */}
+                                    <div className="space-y-3">
+                                        <h4 className="font-headline text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Fabric / Collection</h4>
+                                        <div className="space-y-2 pt-1">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedCatalogId(null);
+                                                    const params = new URLSearchParams(searchParams.toString());
+                                                    params.delete('catalogue');
+                                                    router.push(`${window.location.pathname}?${params.toString()}`);
+                                                }}
+                                                className={cn(
+                                                    "w-full text-left text-xs py-2 px-3 border transition-all duration-300 rounded-none mb-1",
+                                                    selectedCatalogId === null
+                                                        ? "border-primary bg-primary/5 text-primary font-bold"
+                                                        : "border-[#f2f2f2] text-[#555] hover:border-primary hover:text-primary"
+                                                )}
+                                            >
+                                                All Collections
+                                            </button>
+                                            {catalogs.map(cat => {
+                                                const isSelected = selectedCatalogId === cat.id;
+                                                return (
+                                                    <button
+                                                        key={cat.id}
+                                                        onClick={() => handleSelectCatalog(cat.id)}
+                                                        className={cn(
+                                                            "w-full text-left text-xs py-2 px-3 border transition-all duration-300 rounded-none mb-1",
+                                                            isSelected
+                                                                ? "border-primary bg-primary/5 text-primary font-bold"
+                                                                : "border-[#f2f2f2] text-[#555] hover:border-primary hover:text-primary"
+                                                        )}
+                                                    >
+                                                        {cat.name}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <Button 
-                                    variant="outline" 
-                                    onClick={handleResetFilters}
-                                    className="w-full text-xs font-bold uppercase tracking-wider border-primary text-primary hover:bg-primary hover:text-white rounded-none h-11"
-                                >
-                                    Reset Filters
-                                </Button>
-                            </aside>
+
+                                    <Separator className="bg-[#f2f2f2]" />
+
+                                    {/* Filter by Price */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="font-headline text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Price Range</h4>
+                                        </div>
+                                        <div className="space-y-2 pt-1">
+                                            {[
+                                                { label: 'All Prices', min: 0, max: 20000 },
+                                                { label: 'Under ₹3,000', min: 0, max: 3000 },
+                                                { label: '₹3,000 - ₹6,000', min: 3000, max: 6000 },
+                                                { label: '₹6,000 - ₹10,000', min: 6000, max: 10000 },
+                                                { label: 'Above ₹10,000', min: 10000, max: 20000 },
+                                            ].map((range, idx) => {
+                                                const isSelected = filters.priceRange[0] === range.min && filters.priceRange[1] === range.max;
+                                                return (
+                                                    <label key={idx} className="flex items-center gap-2.5 text-xs text-[#555] cursor-pointer group">
+                                                        <input
+                                                            type="radio"
+                                                            name="price-range"
+                                                            checked={isSelected}
+                                                            onChange={() => setFilters({ ...filters, priceRange: [range.min, range.max] })}
+                                                            className="rounded-full border-[#ccc] text-primary focus:ring-primary h-4 w-4"
+                                                        />
+                                                        <span className={cn("group-hover:text-[#1a1a1a] transition-colors", isSelected && "font-bold text-[#1a1a1a]")}>{range.label}</span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    <Separator className="bg-[#f2f2f2]" />
+
+                                    {/* Filter by Ratings */}
+                                    <div className="space-y-3">
+                                        <h4 className="font-headline text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Ratings</h4>
+                                        <div className="flex flex-col gap-2 pt-1">
+                                            {[4, 3, 2].map((rating) => {
+                                                const isSelected = filters.minRating === rating;
+                                                return (
+                                                    <button
+                                                        key={rating}
+                                                        onClick={() => setFilters({ ...filters, minRating: isSelected ? null : rating })}
+                                                        className={cn(
+                                                            "text-left text-xs px-3 py-1.5 border transition-all duration-300 w-full",
+                                                            isSelected 
+                                                                ? "border-primary bg-primary/5 text-primary font-bold" 
+                                                                : "border-[#f2f2f2] text-[#555] hover:border-primary hover:text-primary"
+                                                        )}
+                                                    >
+                                                        {rating}+ Stars & Above
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    
+                                    <Button 
+                                        variant="outline" 
+                                        onClick={handleResetFilters}
+                                        className="w-full text-xs font-bold uppercase tracking-wider border-primary text-primary hover:bg-primary hover:text-white rounded-none h-11"
+                                    >
+                                        Reset Filters
+                                    </Button>
+                                </aside>
 
                             {/* Right Side - Saree Collection Header, Sorting, & Grid */}
                             <div className="space-y-8">
                                 {/* Header & Sort Row */}
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#f2f2f2] pb-6">
                                     <div>
-                                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Home / {activeCategory?.name}</span>
-                                        <h2 className="font-headline text-3xl font-bold uppercase tracking-wider text-[#1a1a1a] mt-1">{activeCategory?.name}</h2>
+                                        {selectedCatalogId !== null && (
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedCatalogId(null);
+                                                    const params = new URLSearchParams(searchParams.toString());
+                                                    params.delete('catalogue');
+                                                    router.push(`${window.location.pathname}?${params.toString()}`);
+                                                }}
+                                                className="flex items-center gap-1.5 text-xs text-primary font-bold hover:text-primary/80 transition-colors uppercase tracking-wider mb-2"
+                                            >
+                                                <ArrowLeft className="w-3.5 h-3.5" />
+                                                Back to Collections
+                                            </button>
+                                        )}
+                                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+                                            Home / {activeCategory?.name} {selectedCatalog && ` / ${selectedCatalog.name}`}
+                                        </span>
+                                        <h2 className="font-headline text-3xl font-bold uppercase tracking-wider text-[#1a1a1a] mt-1">
+                                            {selectedCatalog ? selectedCatalog.name : activeCategory?.name}
+                                        </h2>
                                         <p className="text-xs text-muted-foreground mt-1">{filteredProducts.length} items found</p>
                                     </div>
                                     
@@ -764,7 +670,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             onFocus={() => searchQuery.trim() && setShowSearchDropdown(true)}
                                             className={cn(
-                                                "w-full pl-12 pr-4 py-4 bg-background/80 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/10 focus:shadow-primary/20 rounded-full transition-all duration-500 outline-none text-base placeholder:text-muted-foreground/60 focus:bg-background focus:border-primary/40",
+                                                "w-full pl-12 pr-4 py-4 bg-background/80 backdrop-blur-xl border border-primary/30 hover:border-primary/50 focus:border-primary shadow-[0_4px_16px_rgba(161,31,60,0.04)] focus:shadow-[0_4px_20px_rgba(161,31,60,0.12)] rounded-full transition-all duration-500 outline-none text-base placeholder:text-muted-foreground/60 focus:bg-background",
                                                 tenant.id.toLowerCase().includes('anantha') && "border-primary/20"
                                             )}
                                         />
@@ -969,7 +875,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                             </div>
                         </div>
                     )
-                ) : (
+                )) : (
                     <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 bg-secondary/20 rounded-3xl border border-dashed border-border">
                         <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
                             <Sparkles className="w-8 h-8 text-muted-foreground" />

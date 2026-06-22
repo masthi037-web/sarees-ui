@@ -19,7 +19,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
     const headersList = await headers();
     const headerDomain = headersList.get("x-company-domain");
-    const companyDomain = (headerDomain && headerDomain !== 'localhost') ? headerDomain : 'babaihomefoods';
+    const companyDomain = (headerDomain && headerDomain !== 'localhost') ? headerDomain : 'tirumalasarees';
 
     const company = await fetchCompanyDetails(companyDomain);
     const tenantConfig = resolveTenantConfig(companyDomain);
