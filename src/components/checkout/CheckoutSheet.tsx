@@ -145,6 +145,30 @@ export function CheckoutSheet({ children }: { children: React.ReactNode }) {
             return;
         }
 
+        // Localhost payment simulation bypass
+        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+            setProcessingPayment(true);
+            console.log("Dev Mode: Simulating mock payment flow...");
+            try {
+                // Wait 2 seconds to let the user see the progress line animate to Step 3 (Payment - 100%)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                toast({
+                    title: "Payment Successful ✅ (Dev Mode)",
+                    description: `Order Confirmed! Order ID: MOCK-ORDER-${Date.now()}`,
+                    className: "bg-green-50 border-green-200 text-green-800 animate-in fade-in duration-300"
+                });
+
+                clearCart();
+                setOpen(false);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setProcessingPayment(false);
+            }
+            return;
+        }
+
         const loaded = await loadRazorpay();
         if (!loaded) {
             toast({ variant: "destructive", description: "Payment gateway not loaded. Please ensure you are online." });

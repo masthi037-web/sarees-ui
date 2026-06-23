@@ -196,21 +196,24 @@ export function ProfileSheet({ children }: { children: React.ReactNode }) {
         setIsLoading(true);
         setFeedback(null);
         try {
-            await authService.sendOtp(phoneNumber, {
-                waPhoneNumId: companyDetails?.waPhoneNumId,
-                waToken: companyDetails?.waToken,
-                waOtpTemplateName: companyDetails?.waOtpTemplateName,
-                companyName: companyDetails?.companyName,
-                manaBuyCredentials: companyDetails?.manaBuyCredentials
-            });
+            if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+                console.log("Dev Mode: Bypassing real OTP send. Use OTP code 1234 (Customer) or 5678 (Owner/Admin).");
+            } else {
+                await authService.sendOtp(phoneNumber, {
+                    waPhoneNumId: companyDetails?.waPhoneNumId,
+                    waToken: companyDetails?.waToken,
+                    waOtpTemplateName: companyDetails?.waOtpTemplateName,
+                    companyName: companyDetails?.companyName,
+                    manaBuyCredentials: companyDetails?.manaBuyCredentials
+                });
+            }
 
-            // Increment attempts on success (or failure too? safely assume success sends OTP)
+            // Increment attempts on success
             attempts++;
             localStorage.setItem('otp_attempts_count', attempts.toString());
             localStorage.setItem('otp_last_request_time', now.toString());
 
-            // toast({ title: "OTP Sent", description: "Please check your messages" }); // REMOVED
-            setFeedback({ type: 'success', message: `OTP sent to +91 ${phoneNumber}` });
+            setFeedback({ type: 'success', message: `OTP sent to +91 ${phoneNumber}${typeof window !== 'undefined' && window.location.hostname === 'localhost' ? ' (Dev Bypass Active)' : ''}` });
             setView('login-otp');
             setResendTimer(60);
         } catch (error) {
@@ -245,6 +248,23 @@ export function ProfileSheet({ children }: { children: React.ReactNode }) {
         setIsLoading(true);
         setFeedback(null);
         try {
+            // Local localhost bypass check
+            if (typeof window !== 'undefined' && window.location.hostname === 'localhost' && (otp === '1234' || otp === '5678')) {
+                localStorage.setItem('isLoggedIn', 'true');
+                const role = otp === '5678' ? 'OWNER' : 'CUSTOMER';
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('customerId', 'mock-customer-id');
+                // Simulate JWT token payload containing correct role
+                const mockPayload = btoa(JSON.stringify({ sub: "mock-customer-id", role }));
+                const mockToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${mockPayload}.mock-signature`;
+                localStorage.setItem('accessToken', mockToken);
+                window.dispatchEvent(new Event('auth-change'));
+                setShowSuccess(true);
+                toast({ title: "Mock Login Successful", description: `Logged in as ${role} (Dev Mode)` });
+                setIsLoading(false);
+                return;
+            }
+
             const response = await authService.login(phoneNumber, otp, domain || 'tirumalasarees', companyDetails?.manaBuyCredentials);
 
             // Reset attempts on success
@@ -698,8 +718,13 @@ export function ProfileSheet({ children }: { children: React.ReactNode }) {
                                             handleLogin();
                                         }
                                     }}
-                                />
+                                    />
                             </div>
+                            {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
+                                <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-600 dark:text-amber-400 text-center leading-relaxed font-medium">
+                                    🔌 Local Dev Mode active: Use code <strong className="font-bold underline text-sm">1234</strong> to login as Customer or <strong className="font-bold underline text-sm">5678</strong> as Admin/Owner.
+                                </div>
+                            )}
                             <Button
                                 className="w-full h-14 rounded-2xl text-lg font-bold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
                                 onClick={handleLogin}

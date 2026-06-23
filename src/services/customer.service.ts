@@ -13,6 +13,47 @@ export const customerService = {
 
         if (!customerId) return null;
 
+        // Localhost bypass check
+        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+            console.log("Dev Mode: Returning mock customer details & address");
+            const cachedDetails = localStorage.getItem('mock_customer_details');
+            if (cachedDetails) {
+                try {
+                    return JSON.parse(cachedDetails);
+                } catch (e) {}
+            }
+            const mockData = {
+                customerId: "mock-customer-id",
+                customerName: "Tejesh Neelam",
+                customerMobileNumber: "9988776655",
+                customerEmailId: "tejesh@example.com",
+                customerAddress: [
+                    {
+                        customerAddressId: 1,
+                        addressName: "Home",
+                        customerDrNum: "Flat 402",
+                        customerRoad: "Premium Residency, Jubilee Hills",
+                        customerCity: "Hyderabad",
+                        customerState: "Telangana",
+                        customerPin: "500033",
+                        customerCountry: "India"
+                    },
+                    {
+                        customerAddressId: 2,
+                        addressName: "Office",
+                        customerDrNum: "Level 8",
+                        customerRoad: "Tech Hub, Indiranagar",
+                        customerCity: "Bengaluru",
+                        customerState: "Karnataka",
+                        customerPin: "560038",
+                        customerCountry: "India"
+                    }
+                ]
+            };
+            localStorage.setItem('mock_customer_details', JSON.stringify(mockData));
+            return mockData;
+        }
+
         if (!forceRefresh) {
             try {
                 const cached = localStorage.getItem(CACHE_KEY);
@@ -84,6 +125,35 @@ export const customerService = {
     },
 
     async createAddress(data: Partial<CustomerAddress>) {
+        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+            console.log("Dev Mode: Simulating create address locally");
+            const cachedDetails = localStorage.getItem('mock_customer_details');
+            let mockData = {
+                customerId: "mock-customer-id",
+                customerName: "Tejesh Neelam",
+                customerMobileNumber: "9988776655",
+                customerEmailId: "tejesh@example.com",
+                customerAddress: [] as CustomerAddress[]
+            };
+            if (cachedDetails) {
+                try {
+                    mockData = JSON.parse(cachedDetails);
+                } catch (e) {}
+            }
+            const newAddr = {
+                customerAddressId: Date.now(),
+                addressName: data.addressName || 'Home',
+                customerDrNum: data.customerDrNum || '',
+                customerRoad: data.customerRoad || '',
+                customerCity: data.customerCity || '',
+                customerState: data.customerState || '',
+                customerPin: data.customerPin || '',
+                customerCountry: data.customerCountry || 'India'
+            } as CustomerAddress;
+            mockData.customerAddress = [...(mockData.customerAddress || []), newAddr];
+            localStorage.setItem('mock_customer_details', JSON.stringify(mockData));
+            return newAddr;
+        }
         return apiClient<CustomerAddress>('/customer/address/create', {
             method: 'POST',
             body: JSON.stringify(data),
