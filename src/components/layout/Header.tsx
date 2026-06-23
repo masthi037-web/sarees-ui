@@ -6,7 +6,7 @@ import { Heart, User, ShoppingCart, Search, ShoppingBag, History, Home, Settings
 import { cn, slugify } from '@/lib/utils';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { useCart } from '@/hooks/use-cart';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -58,9 +58,32 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
   // Safe cart count
   const displayCartCount = mounted ? cartItemCount : 0;
 
+  // Find current active category based on URL pathname
+  const activeCategory = useMemo(() => {
+    if (!categories || categories.length === 0) return null;
+    
+    if (pathname.startsWith('/category/')) {
+      const pathParts = pathname.split('/');
+      const slugOrId = pathParts[pathParts.length - 1];
+      const found = categories.find(cat => 
+        cat.id === slugOrId || slugify(cat.name) === slugOrId
+      );
+      if (found) return found;
+    }
+    
+    // Default to the first category (Sarees) if on homepage or elsewhere
+    return categories[0];
+  }, [pathname, categories]);
+
+  // Extract products belonging to the active category
+  const categoryProducts = useMemo(() => {
+    if (!activeCategory) return [];
+    return activeCategory.catalogs.flatMap(catalog => catalog.products);
+  }, [activeCategory]);
+
   useEffect(() => {
     if (searchQuery.trim()) {
-      const results = allProducts.filter(product =>
+      const results = categoryProducts.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setSearchResults(results.slice(0, 5)); // Limit to 5 results
@@ -69,7 +92,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
       setSearchResults([]);
       setShowDropdown(false);
     }
-  }, [searchQuery]);
+  }, [searchQuery, categoryProducts]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -143,7 +166,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
               <div className="relative w-full max-w-[120px] xs:max-w-[180px] sm:max-w-[220px]" ref={searchRef}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#888]" />
                 <Input
-                  placeholder={text.searchPlaceholder || "Search here..."}
+                  placeholder={activeCategory ? `Search in ${activeCategory.name}...` : (text.searchPlaceholder || "Search here...")}
                   className="h-8 pl-8 pr-4 rounded-full bg-[#f2f2f2] border-transparent text-[#1a1a1a] text-xs placeholder:text-[#888] focus:bg-[#eaeaea] focus:border-transparent transition-all outline-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -240,9 +263,6 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
                 Sarees
               </Link>
             )}
-            <Link href="/" className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent")}>
-              New Arrivals
-            </Link>
             {isLoggedIn && isOwner && (
               <>
                 <Link href="/admin/orders" className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent", pathname === '/admin/orders' && "text-primary border-primary")}>

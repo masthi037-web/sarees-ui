@@ -394,11 +394,52 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                         </div>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-4 mb-8">
-                        <Button variant="outline" size="icon" onClick={() => router.push('/')} className="rounded-full shadow-sm hover:bg-secondary border-muted">
-                            <ArrowLeft className="w-5 h-5 text-foreground" />
-                        </Button>
-                        <h1 className="text-3xl md:text-4xl font-bold font-headline">{activeCategory?.name || 'Category'}</h1>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-border/10 pb-6">
+                        <div className="flex items-center gap-4">
+                            <Button variant="outline" size="icon" onClick={() => router.push('/')} className="rounded-full shadow-sm hover:bg-secondary border-muted">
+                                <ArrowLeft className="w-5 h-5 text-foreground" />
+                            </Button>
+                            <h1 className="text-3xl md:text-4xl font-bold font-headline text-[#1a1a1a]">{activeCategory?.name || 'Category'}</h1>
+                        </div>
+
+                        {/* Horizontal Catalogue Selection Boxes */}
+                        {activeCategory && (
+                            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0">
+                                <button
+                                    onClick={() => {
+                                        setSelectedCatalogId(null);
+                                        const params = new URLSearchParams(searchParams.toString());
+                                        params.delete('catalogue');
+                                        router.push(`${window.location.pathname}?${params.toString()}`);
+                                    }}
+                                    className={cn(
+                                        "px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 border rounded-none whitespace-nowrap",
+                                        selectedCatalogId === null
+                                            ? "border-primary bg-primary text-white"
+                                            : "border-border/60 bg-white text-muted-foreground hover:border-primary hover:text-primary"
+                                    )}
+                                >
+                                    All Collections
+                                </button>
+                                {catalogs.map((cat) => {
+                                    const isSelected = selectedCatalogId === cat.id;
+                                    return (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => handleSelectCatalog(cat.id)}
+                                            className={cn(
+                                                "px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 border rounded-none whitespace-nowrap",
+                                                isSelected
+                                                    ? "border-primary bg-primary text-white"
+                                                    : "border-border/60 bg-white text-muted-foreground hover:border-primary hover:text-primary"
+                                            )}
+                                        >
+                                            {cat.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -765,35 +806,6 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                                 </div>
                                             ));
                                         })()}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* New Arrivals Block */}
-                            {newArrivals.length > 0 && (
-                                <div id="new-arrivals" className="mb-16 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200 scroll-mt-24">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div className="flex items-center gap-3">
-                                            <div className="relative flex h-3 w-3">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                                            </div>
-                                            <div>
-                                                <h3 className={cn(
-                                                    "text-2xl font-bold font-headline text-foreground leading-none",
-                                                    tenant.id === 'ananthajewellers' && "text-3xl tracking-tight"
-                                                )}>Freshly Dropped</h3>
-                                                <p className="text-sm text-muted-foreground mt-2">Just in: {activeCategory?.name}'s latest treasures</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex overflow-x-auto items-stretch gap-4 pb-8 -mx-4 px-4 scroll-smooth no-scrollbar snap-x snap-mandatory">
-                                        {newArrivals.map((product) => (
-                                            <div key={product.id} className="w-[280px] md:w-[320px] flex-shrink-0 snap-center h-full flex flex-col">
-                                                <ProductCard product={product} hideDescription={true} />
-                                            </div>
-                                        ))}
                                     </div>
                                 </div>
                             )}

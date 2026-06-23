@@ -287,7 +287,6 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
     const heroStats = [
         { label: 'Collections', value: String(visibleCategories.length).padStart(2, '0') },
         { label: 'Curated Pieces', value: String(baseProducts.length || allCategoryProducts.length).padStart(2, '0') },
-        { label: 'New Arrivals', value: String(newArrivals.length).padStart(2, '0') },
     ];
 
     // --- End First Category Product Grid Logic ---
@@ -353,7 +352,7 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                                         </p>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-3 md:min-w-[260px]">
+                                    <div className="grid grid-cols-2 gap-3 md:min-w-[260px]">
                                         {heroStats.map((stat) => (
                                             <div key={stat.label} className="rounded-none border border-[#f2f2f2] bg-white px-3 py-4 text-center">
                                                 <div className="font-headline text-3xl font-bold text-primary">{stat.value}</div>
@@ -597,25 +596,6 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                                             ))}
                                         </div>
                                     </div>
-
-                                    {newArrivals.length > 0 && (
-                                        <div className="space-y-5">
-                                            <div className="flex items-end justify-between gap-4">
-                                                <div>
-                                                    <div className="text-[10px] uppercase tracking-wider text-primary font-bold">New arrival rail</div>
-                                                    <h4 className="mt-2 font-headline text-3xl font-bold text-[#1a1a1a]">Freshly dropped</h4>
-                                                </div>
-                                                <p className="hidden text-sm text-muted-foreground md:block">A faster, magazine-like browse for the latest pieces.</p>
-                                            </div>
-                                            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-4 no-scrollbar">
-                                                {newArrivals.map((product) => (
-                                                    <div key={product.id} className="w-[290px] flex-shrink-0 snap-start">
-                                                        <ProductCard product={product} hideDescription={true} />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
 
                                     {famousProducts.length > 0 && (
                                         <div className="space-y-5">

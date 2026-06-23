@@ -47,9 +47,9 @@ export function GlobalBackgroundAnimation() {
     }[] = [];
 
     const threadMaterial = new THREE.LineBasicMaterial({
-      color: new THREE.Color("#CA8A04"), // Warm gold thread color
+      color: new THREE.Color("#F59E0B"), // Brighter amber/gold thread color
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.80,
       blending: THREE.NormalBlending,
     });
 
@@ -109,10 +109,10 @@ export function GlobalBackgroundAnimation() {
     const particleTexture = new THREE.CanvasTexture(canvas);
 
     const particleMaterial = new THREE.PointsMaterial({
-      color: new THREE.Color("#FDE68A"), // Shimmering light gold
-      size: 0.18,
+      color: new THREE.Color("#FBBF24"), // Brighter light gold
+      size: 0.20,
       transparent: true,
-      opacity: 0.70,
+      opacity: 0.95,
       map: particleTexture,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
@@ -245,7 +245,7 @@ export function GlobalBackgroundAnimation() {
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-65"
+      className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-95"
     >
       <canvas ref={canvasRef} className="w-full h-full block" />
     </div>
