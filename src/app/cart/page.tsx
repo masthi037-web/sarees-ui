@@ -98,6 +98,40 @@ export default function CartPage() {
           </p>
         </div>
 
+        {/* Checkout Steps Progress Bar */}
+        <div className="max-w-md mx-auto mb-12 bg-card/60 backdrop-blur-sm border border-border/40 p-4 rounded-2xl relative z-10">
+          <div className="relative flex items-center justify-between">
+            {/* Background Line */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-border z-0" />
+            {/* Active Line Progress */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-accent z-0 transition-all duration-500" style={{ width: '0%' }} />
+
+            {/* Step 1: Bag */}
+            <div className="relative z-10 flex flex-col items-center gap-1.5">
+              <div className="w-8 h-8 rounded-full bg-accent text-navy-900 border border-accent flex items-center justify-center font-bold text-xs shadow-md shadow-accent/15">
+                1
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-accent">Bag</span>
+            </div>
+
+            {/* Step 2: Address */}
+            <div className="relative z-10 flex flex-col items-center gap-1.5">
+              <div className="w-8 h-8 rounded-full bg-card text-muted-foreground border-2 border-border flex items-center justify-center font-bold text-xs">
+                2
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Address</span>
+            </div>
+
+            {/* Step 3: Payment */}
+            <div className="relative z-10 flex flex-col items-center gap-1.5">
+              <div className="w-8 h-8 rounded-full bg-card text-muted-foreground border-2 border-border flex items-center justify-center font-bold text-xs">
+                3
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Payment</span>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
           {/* Cart Items List */}

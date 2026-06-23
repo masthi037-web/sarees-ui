@@ -309,6 +309,56 @@ export function CheckoutSheet({ children }: { children: React.ReactNode }) {
                     </div>
                 </SheetHeader>
 
+                {/* Checkout Progress Bar */}
+                <div className="px-6 py-4 bg-background/50 border-b border-border/30">
+                    <div className="relative flex items-center justify-between max-w-xs mx-auto">
+                        {/* Background Line */}
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-border z-0" />
+                        {/* Active Line Progress */}
+                        <div 
+                            className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-accent z-0 transition-all duration-500" 
+                            style={{ width: processingPayment ? '100%' : '50%' }} 
+                        />
+
+                        {/* Step 1: Bag (Complete) */}
+                        <div className="relative z-10 flex flex-col items-center gap-1.5">
+                            <div className="w-8 h-8 rounded-full bg-accent text-navy-900 flex items-center justify-center font-bold text-xs shadow-md shadow-accent/15">
+                                <Check className="w-4 h-4 stroke-[2.5]" />
+                            </div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-accent">Bag</span>
+                        </div>
+
+                        {/* Step 2: Address (Active/Complete) */}
+                        <div className="relative z-10 flex flex-col items-center gap-1.5">
+                            <div className={cn(
+                                "w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-colors duration-300",
+                                processingPayment 
+                                    ? "bg-accent text-navy-900 shadow-md shadow-accent/15" 
+                                    : "bg-accent text-navy-900 border border-accent"
+                            )}>
+                                {processingPayment ? <Check className="w-4 h-4 stroke-[2.5]" /> : "2"}
+                            </div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-accent">Address</span>
+                        </div>
+
+                        {/* Step 3: Payment */}
+                        <div className="relative z-10 flex flex-col items-center gap-1.5">
+                            <div className={cn(
+                                "w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-colors duration-300 border-2",
+                                processingPayment 
+                                    ? "bg-accent text-navy-900 border-accent shadow-md shadow-accent/15" 
+                                    : "bg-card text-muted-foreground border-border"
+                            )}>
+                                3
+                            </div>
+                            <span className={cn(
+                                "text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300",
+                                processingPayment ? "text-accent font-bold" : "text-muted-foreground"
+                            )}>Payment</span>
+                        </div>
+                    </div>
+                </div>
+
                 <ScrollArea className="flex-1 bg-secondary/10">
                     <div className="p-6 space-y-8">
 
