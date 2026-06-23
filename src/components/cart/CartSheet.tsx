@@ -79,6 +79,89 @@ import { useTenant } from '@/components/providers/TenantContext';
 import { useSheetBackHandler } from '@/hooks/use-sheet-back-handler';
 import { ImageUpload } from '@/components/common/ImageUpload';
 
+const CheckoutProgressBar = ({ currentView }: { currentView: 'cart' | 'list' | 'add' | 'payment' | 'success' | 'failed' }) => {
+    let stepIndex = 0;
+    if (currentView === 'list' || currentView === 'add') {
+        stepIndex = 1;
+    } else if (currentView === 'payment') {
+        stepIndex = 2;
+    }
+
+    // Determine position percentage of the truck
+    const percentage = stepIndex === 0 ? 0 : stepIndex === 1 ? 50 : 100;
+
+    return (
+        <div className="px-6 py-4 bg-muted/20 border-b border-border/30 relative">
+            <div className="relative h-6 mt-1 flex items-center">
+                {/* Pathway background line */}
+                <div className="absolute left-0 right-0 h-1 bg-border/40 rounded-full border-t border-dashed" />
+                
+                {/* Pathway active track */}
+                <div 
+                    className="absolute left-0 h-1 bg-gradient-to-r from-primary/60 via-primary to-accent transition-all duration-1000 ease-in-out rounded-full"
+                    style={{ width: `${percentage}%` }}
+                />
+
+                {/* Checkpoint 1: Cart */}
+                <div className="absolute left-0 -translate-x-1/2 flex flex-col items-center">
+                    <div className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all duration-500 z-10",
+                        stepIndex >= 0 
+                            ? "bg-background border-primary text-primary shadow-[0_0_12px_rgba(var(--primary),0.2)]" 
+                            : "bg-background border-muted text-muted-foreground"
+                    )}>
+                        <ShoppingCart className="w-3.5 h-3.5" />
+                    </div>
+                </div>
+
+                {/* Checkpoint 2: Address */}
+                <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+                    <div className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all duration-500 z-10",
+                        stepIndex >= 1 
+                            ? "bg-background border-primary text-primary shadow-[0_0_12px_rgba(var(--primary),0.2)]" 
+                            : "bg-background border-muted text-muted-foreground"
+                    )}>
+                        <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                </div>
+
+                {/* Checkpoint 3: Payment */}
+                <div className="absolute right-0 translate-x-1/2 flex flex-col items-center">
+                    <div className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all duration-500 z-10",
+                        stepIndex >= 2 
+                            ? "bg-background border-primary text-primary shadow-[0_0_12px_rgba(var(--primary),0.2)]" 
+                            : "bg-background border-muted text-muted-foreground"
+                    )}>
+                        <CreditCard className="w-3.5 h-3.5" />
+                    </div>
+                </div>
+
+                {/* Moving Truck */}
+                <div 
+                    className="absolute -top-1.5 transition-all duration-1000 ease-in-out z-20"
+                    style={{ 
+                        left: `${percentage}%`,
+                        transform: `translateX(-50%)` 
+                    }}
+                >
+                    <div className="bg-primary text-primary-foreground p-1.5 rounded-full shadow-lg border border-white/20 animate-bounce flex items-center justify-center">
+                        <Truck className="w-4 h-4" />
+                    </div>
+                </div>
+            </div>
+            
+            {/* Step Labels */}
+            <div className="flex justify-between mt-3 text-[9px] font-black uppercase tracking-wider text-muted-foreground/80">
+                <span className={cn(stepIndex === 0 ? "text-primary font-black" : "text-muted-foreground/80")}>Cart</span>
+                <span className={cn(stepIndex === 1 ? "text-primary font-black" : "text-muted-foreground/80")}>Address</span>
+                <span className={cn(stepIndex === 2 ? "text-primary font-black" : "text-muted-foreground/80")}>Payment</span>
+            </div>
+        </div>
+    );
+};
+
 export function CartSheet({ children }: { children: React.ReactNode }) {
     const { cart, updateQuantity, removeFromCart, getCartTotal, getCartItemsCount, isCartOpen, setCartOpen, companyDetails, lastAddedItemId, clearCart, setCart } = useCart();
     const { isLoaded: isRazorpayLoaded, loadRazorpay } = useRazorpay();
@@ -2823,6 +2906,10 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                         </div>
                     )}
                 </SheetHeader>
+
+                {view !== 'success' && view !== 'failed' && (
+                    <CheckoutProgressBar currentView={view} />
+                )}
 
                 {
                     view === 'cart' ? (

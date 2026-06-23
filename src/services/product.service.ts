@@ -129,6 +129,34 @@ export async function fetchProductDetails(productId: string): Promise<AppProduct
 
 export async function validateCheckout(payload: CheckoutValidationRequest): Promise<CheckoutCheckResponse[] | null> {
     try {
+        if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+            console.log('Localhost detected: Mocking checkout validation response.');
+            return payload.items.map(item => ({
+                multipleSetDiscount: null,
+                multipleDiscountMoreThan: null,
+                productOffer: null,
+                productStatus: 'ACTIVE',
+                productPrice: 0,
+                productPriceAfterDiscount: 0,
+                colourStatus: 'ACTIVE',
+                colour: null,
+                colourQuantityAvailable: 999,
+                sizeStatus: 'ACTIVE',
+                productSizePrice: null,
+                productSizePriceAfterDiscount: 0,
+                productSize: null,
+                productQuantityAvailable: 999,
+                sizeQuantity: 999,
+                sizeColourName: null,
+                colourExtraPrice: 0,
+                productSizeColourQuantity: 999,
+                sizeColourStatus: 'ACTIVE',
+                productId: item.productId,
+                sizeId: item.sizeId,
+                productColourId: item.productColourId,
+                productSizeColourId: item.productSizeColourId
+            }));
+        }
 
         const data = await apiClient<{ productDetails: CheckoutCheckResponse[] }>('/product/checkout/check', {
             method: 'POST',
