@@ -153,10 +153,12 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
     }, [initialCategories, companyDetails?.deliveryBetween, isLoadingCategory, isCategoryExpired, markCategoryAsFetched, setCategories]);
 
     useEffect(() => {
-        if (activeCategoryId) {
-            loadCategoryData(activeCategoryId);
+        if (activeCategories.length > 0) {
+            activeCategories.forEach(category => {
+                loadCategoryData(category.id);
+            });
         }
-    }, [activeCategoryId, activeCategories.length > 0]);
+    }, [activeCategories.length]);
 
     const catalogs: Catalog[] = activeCategory ? activeCategory.catalogs : [];
     const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null);
@@ -516,149 +518,75 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
 
                     <SectionDivider />
 
-                    {activeCategoryId && activeCategory && (
-                        <section id="first-category-products" className="space-y-14 pb-24 scroll-mt-24">
-                            <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
-                                <div className="space-y-4">
-                                    <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-4 py-1.5">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                        <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">Current Edit</span>
-                                    </div>
-                                    <h3 className="font-headline text-4xl leading-none text-foreground">{activeCategory.name} highlights</h3>
-                                    <p className="max-w-md text-sm leading-7 text-muted-foreground">A more dramatic browse of standout styles, fast movers, and fresh drops from this category.</p>
-                                </div>
+                    {activeCategories.map((category) => {
+                        const catProducts = category.catalogs.flatMap(catalog =>
+                            catalog.products.map(p => {
+                                const image = imageMap.get(p.imageId);
+                                return {
+                                    ...p,
+                                    imageHint: image?.imageHint || 'product image',
+                                    imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
+                                };
+                            })
+                        );
 
-                                {!fetchAllAtOnce && (
-                                    <div className="relative w-full group justify-self-end max-w-xl" ref={searchRef}>
-                                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                            <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300" />
-                                        </div>
-                                        <input
-                                            type="text"
-                                            placeholder={`Search in ${activeCategory.name}...`}
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            onFocus={() => searchQuery.trim() && setShowSearchDropdown(true)}
-                                            className="w-full rounded-none border border-border/30 bg-card/80 py-4 pl-12 pr-4 text-base outline-none backdrop-blur-xl transition-all duration-300 focus:border-primary/30"
-                                        />
-                                        {showSearchDropdown && (
-                                            <div className="absolute top-full left-0 z-50 mt-2 max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-border/30 bg-card/95 shadow-xl backdrop-blur-xl">
-                                                {searchDropdownResults.length > 0 ? (
-                                                    <div className="py-2">
-                                                        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Products</div>
-                                                        {searchDropdownResults.map(product => (
-                                                            <div
-                                                                key={product.id}
-                                                                className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-secondary/40"
-                                                                onClick={() => handleSearchProductClick(product.id)}
-                                                            >
-                                                                <div className="relative h-12 w-12 overflow-hidden rounded-xl bg-secondary">
-                                                                    <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
-                                                                </div>
-                                                                <div className="flex-1">
-                                                                    <h4 className="line-clamp-2 text-sm font-semibold text-foreground">{product.name}</h4>
-                                                                    <div className="mt-1 flex items-center gap-2">
-                                                                        <p className="text-xs font-semibold text-foreground">₹{product.priceAfterDiscount && product.priceAfterDiscount < product.price ? product.priceAfterDiscount : product.price}</p>
-                                                                        {product.priceAfterDiscount && product.priceAfterDiscount < product.price && (
-                                                                            <p className="text-[10px] text-muted-foreground line-through">₹{product.price}</p>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="p-8 text-center text-muted-foreground">No results found in "{activeCategory.name}"</div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {isLoadingCategory[activeCategoryId] ? (
-                                <div className="flex items-center justify-center py-20 text-muted-foreground">
-                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                    <span className="ml-3">Loading products...</span>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="rounded-none border border-[#f2f2f2] bg-white p-6">
-                                        <div className="mb-6 flex items-center justify-between">
-                                            <div>
-                                                <div className="text-[10px] uppercase tracking-wider text-primary font-bold">Spotlight Rail</div>
-                                                <h4 className="mt-2 font-headline text-3xl font-bold text-[#1a1a1a]">Front-row picks</h4>
-                                            </div>
-                                        </div>
-                                        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                                            {spotlightProducts.map((product) => (
-                                                <ProductCard key={product.id} product={product} hideDescription={true} />
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {famousProducts.length > 0 && (
-                                        <div className="space-y-5">
-                                            <div>
-                                                <div className="text-[10px] uppercase tracking-wider text-primary font-bold">Bestseller rail</div>
-                                                <h4 className="mt-2 font-headline text-3xl font-bold text-[#1a1a1a]">Signature selection</h4>
-                                            </div>
-                                            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-4 no-scrollbar">
-                                                {famousProducts.map((product) => (
-                                                    <div key={product.id} className="w-[290px] flex-shrink-0 snap-start">
-                                                        <ProductCard product={product} hideDescription={true} />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="space-y-8">
-                                        <div className="flex items-end justify-between gap-4">
-                                            <div>
-                                                <div className="text-[10px] uppercase tracking-wider text-primary font-bold">Catalog explorer</div>
-                                                <h4 className="mt-2 font-headline text-3xl font-bold text-[#1a1a1a]">Browse by story</h4>
-                                            </div>
-                                            <p className="hidden text-sm text-muted-foreground md:block">Choose a catalog, then dive into the full product selection below.</p>
-                                        </div>
-
-                                        <CatalogGrid
-                                            catalogs={tenant.id.toLowerCase().includes('sandhya') ? catalogs.slice(0, 1) : catalogs}
-                                            selectedCatalogId={selectedCatalogId}
-                                            onSelectCatalog={(id) => {
-                                                setSelectedCatalogId(id);
-                                                if (tenant.id.toLowerCase().includes('sandhya')) {
-                                                    setTimeout(() => {
-                                                        const element = document.getElementById('catalog-products');
-                                                        if (element) {
-                                                            const yOffset = -100;
-                                                            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                                            window.scrollTo({ top: y, behavior: 'smooth' });
-                                                        }
-                                                    }, 200);
-                                                }
-                                            }}
-                                        />
-
-                                        {baseProducts.length > 0 && (
-                                            <div id="catalog-products" className="scroll-mt-24">
-                                                <div className="mb-8 flex items-center justify-between">
-                                                    <div>
-                                                        <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1 mb-3">
-                                                            <span className="text-[9px] font-bold uppercase tracking-wider text-primary">{baseProducts.length} items</span>
-                                                        </div>
-                                                        <h3 className="font-headline text-3xl font-bold text-[#1a1a1a]">{selectedCatalog?.name || `All Products in ${activeCategory?.name}`}</h3>
-                                                        <p className="mt-1 text-sm text-muted-foreground">A denser premium grid replacing the old marketplace feel.</p>
-                                                    </div>
+                        if (catProducts.length === 0) {
+                            if (isLoadingCategory[category.id]) {
+                                return (
+                                    <div key={category.id} className="space-y-6 py-10">
+                                        <div className="flex items-center justify-between border-b border-[#f2f2f2] pb-4">
+                                            <div className="space-y-2">
+                                                <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1">
+                                                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">{category.name}</span>
                                                 </div>
-                                                <ProductGrid products={baseProducts} />
+                                                <h3 className="font-headline text-3xl font-semibold text-[#1a1a1a] uppercase tracking-wide">
+                                                    {category.name} Highlights
+                                                </h3>
                                             </div>
-                                        )}
+                                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                        </div>
                                     </div>
-                                </>
-                            )}
-                        </section>
-                    )}
+                                );
+                            }
+                            return null;
+                        }
+
+                        // Curate top 5 products as preview
+                        const previewProducts = catProducts.slice(0, 5);
+                        const catSlug = slugify(category.name);
+
+                        return (
+                            <section key={category.id} className="space-y-8 scroll-mt-24">
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-[#f2f2f2] pb-4">
+                                    <div>
+                                        <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1 mb-2">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">Current Edit</span>
+                                        </div>
+                                        <h3 className="font-headline text-3xl font-semibold text-[#1a1a1a] uppercase tracking-wide">
+                                            {category.name} Highlights
+                                        </h3>
+                                    </div>
+                                    <button
+                                        onClick={() => router.push(`/category/${catSlug}`)}
+                                        className="group inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary border-b border-primary pb-0.5 hover:text-[#1a1a1a] hover:border-[#1a1a1a] transition-all duration-300"
+                                    >
+                                        Explore Full Collection
+                                        <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+                                    </button>
+                                </div>
+
+                                <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                                    {previewProducts.map((product) => (
+                                        <div key={product.id} className="w-[280px] md:w-[320px] flex-shrink-0 snap-start">
+                                            <ProductCard product={product} hideDescription={true} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        );
+                    })}
                 </div>
             </div>
         </div>
