@@ -151,12 +151,10 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
     }, [initialCategories, companyDetails?.deliveryBetween, isLoadingCategory, isCategoryExpired, markCategoryAsFetched, setCategories]);
 
     useEffect(() => {
-        if (activeCategories.length > 0) {
-            activeCategories.forEach(category => {
-                loadCategoryData(category.id);
-            });
+        if (activeCategoryId) {
+            loadCategoryData(activeCategoryId);
         }
-    }, [activeCategories.length]);
+    }, [activeCategoryId, loadCategoryData]);
 
     const catalogs: Catalog[] = activeCategory ? activeCategory.catalogs : [];
     const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null);
