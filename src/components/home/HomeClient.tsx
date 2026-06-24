@@ -37,7 +37,15 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
         if (baseCats.length === 0) {
             return MOCK_TENANT_CATEGORIES;
         }
-        return baseCats;
+        return baseCats.map(cat => {
+            const cachedCat = categories.find(c => c.id === cat.id);
+            return {
+                ...cat,
+                catalogs: (cachedCat && cachedCat.catalogs && cachedCat.catalogs.length > 0)
+                    ? cachedCat.catalogs
+                    : cat.catalogs
+            };
+        });
     }, [initialCategories, categories]);
 
     const tenant = useTenant();
