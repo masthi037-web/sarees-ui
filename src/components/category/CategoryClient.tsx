@@ -60,7 +60,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
         setSelectedCatalogs([]);
         setFilters({
             sortBy: 'recommended',
-            priceRange: [0, 20000]
+            priceRange: [0, 100000]
         });
     };
 
@@ -166,11 +166,11 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
 
     const [filters, setFilters] = useState<FilterState>({
         sortBy: 'recommended',
-        priceRange: [0, 20000]
+        priceRange: [0, 100000]
     });
 
     useEffect(() => {
-        setFilters({ sortBy: 'recommended', priceRange: [0, 20000] });
+        setFilters({ sortBy: 'recommended', priceRange: [0, 100000] });
     }, [selectedCatalogId, selectedCategory]);
 
     const activeCategory = activeCategories.find(c => c.id === selectedCategory);
@@ -549,11 +549,15 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                         </div>
                                         <div className="space-y-2 pt-1">
                                             {[
-                                                { label: 'All Prices', min: 0, max: 20000 },
-                                                { label: 'Under ₹3,000', min: 0, max: 3000 },
-                                                { label: '₹3,000 - ₹6,000', min: 3000, max: 6000 },
-                                                { label: '₹6,000 - ₹10,000', min: 6000, max: 10000 },
-                                                { label: 'Above ₹10,000', min: 10000, max: 20000 },
+                                                { label: 'All Prices', min: 0, max: 100000 },
+                                                { label: '₹0 - ₹500', min: 0, max: 500 },
+                                                { label: '₹500 - ₹1,000', min: 500, max: 1000 },
+                                                { label: '₹1,000 - ₹1,500', min: 1000, max: 1500 },
+                                                { label: '₹1,500 - ₹2,000', min: 1500, max: 2000 },
+                                                { label: '₹2,000 - ₹3,000', min: 2000, max: 3000 },
+                                                { label: '₹3,000 - ₹4,000', min: 3000, max: 4000 },
+                                                { label: '₹4,000 - ₹5,000', min: 4000, max: 5000 },
+                                                { label: 'Above ₹5,000', min: 5000, max: 100000 },
                                             ].map((range, idx) => {
                                                 const isSelected = filters.priceRange[0] === range.min && filters.priceRange[1] === range.max;
                                                 return (
@@ -616,7 +620,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                                 onApply={setFilters} 
                                                 currentFilters={filters}
                                                 minPrice={0}
-                                                maxPrice={20000}
+                                                maxPrice={100000}
                                             />
                                         </div>
                                         

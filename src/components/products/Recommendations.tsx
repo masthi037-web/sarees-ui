@@ -37,14 +37,15 @@ export default function Recommendations({
       const products = await getRecommendationsAction(
         companyDetails?.deliveryBetween,
         categoryId,
-        currentProductId
+        currentProductId,
+        companyDetails?.companyId
       );
       setRecommendedProducts(products);
       setLoading(false);
     };
 
     fetchRecommendations();
-  }, [categoryId, currentProductId, companyDetails?.deliveryBetween]);
+  }, [categoryId, currentProductId, companyDetails?.deliveryBetween, companyDetails?.companyId]);
 
   if (loading) {
     return <RecommendationSkeleton />;

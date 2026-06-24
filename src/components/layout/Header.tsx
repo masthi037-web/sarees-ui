@@ -150,37 +150,41 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
     return slides;
   }, [companyDetails]);
 
-  const [currentSlideIdx, setCurrentSlideIdx] = useState(0);
-
-  useEffect(() => {
-    if (announcementSlides.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentSlideIdx(prev => (prev + 1) % announcementSlides.length);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [announcementSlides]);
-
   return (
     <header className="sticky top-0 left-0 w-full z-50 bg-white border-b border-[#f2f2f2] shadow-sm transition-all duration-300">
-      {/* Top Announcement Bar */}
+      {/* Top Announcement Bar - Scrolling Marquee */}
       {mounted && announcementSlides.length > 0 && (
-        <div className="bg-[#fdf9f2] border-b border-[#f5eedc] py-2.5 px-4 text-center text-[10px] sm:text-xs tracking-wide transition-all duration-500 ease-in-out select-none">
-          <div className="flex items-center justify-center gap-1.5 animate-in fade-in duration-500">
-            {(() => {
-              const slide = announcementSlides[currentSlideIdx];
+        <div className="bg-[#fdf9f2] border-b border-[#f5eedc] py-2 px-4 overflow-hidden relative select-none w-full">
+          <style>{`
+            @keyframes marquee {
+              0% { transform: translateX(0%); }
+              100% { transform: translateX(-50%); }
+            }
+            .animate-marquee {
+              display: inline-flex;
+              animation: marquee 25s linear infinite;
+            }
+            .animate-marquee:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
+          <div className="animate-marquee whitespace-nowrap gap-12 text-[10px] sm:text-xs tracking-wide flex">
+            {(announcementSlides.length > 1 
+              ? [...announcementSlides, ...announcementSlides] 
+              : [...announcementSlides, ...announcementSlides, ...announcementSlides, ...announcementSlides]
+            ).map((slide, index) => {
               const colonIndex = slide.indexOf(':');
-              if (colonIndex !== -1) {
-                const label = slide.substring(0, colonIndex + 1);
-                const value = slide.substring(colonIndex + 1);
-                return (
-                  <p className="text-[#c2410c] font-semibold">
-                    <span className="font-bold text-foreground mr-1.5">{label}</span>
-                    <span>{value}</span>
-                  </p>
-                );
-              }
-              return <p className="text-[#c2410c] font-semibold">{slide}</p>;
-            })()}
+              const label = colonIndex !== -1 ? slide.substring(0, colonIndex + 1) : '';
+              const value = colonIndex !== -1 ? slide.substring(colonIndex + 1) : slide;
+              return (
+                <div key={index} className="inline-flex items-center gap-1.5 mx-8 shrink-0">
+                  {label ? (
+                    <span className="font-bold text-foreground">{label}</span>
+                  ) : null}
+                  <span className="text-[#c2410c] font-semibold">{value}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

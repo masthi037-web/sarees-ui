@@ -13,6 +13,7 @@ import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { cn, resolveImageUrl, slugify } from '@/lib/utils';
 import Recommendations from '@/components/products/Recommendations';
+import { FeaturesCarousel } from '@/components/home/FeaturesCarousel';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { useProduct } from '@/hooks/use-product';
@@ -908,46 +909,6 @@ export default function ProductDetailPage() {
                   })()}
                 </div>
 
-                {/* Whatsapp Ordering button */}
-                {companyDetails?.companyPhone && (
-                  <a
-                    href={`https://wa.me/${companyDetails.companyPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi, I want to order this product: ${product.name} (Price: ₹${finalPrice}). Link: ${window.location.href}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full h-12 bg-[#075e54] hover:bg-[#128c7e] text-white flex items-center justify-center gap-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-sm"
-                  >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.458L0 24zm6.59-20.372c-.224-.498-.46-.508-.673-.517-.215-.008-.46-.008-.705-.008-.246 0-.646.092-.983.46-.338.368-1.288 1.258-1.288 3.064 0 1.806 1.312 3.55 1.496 3.801.184.25 2.529 4.093 6.242 5.545.922.36 1.64.577 2.196.755.93.295 1.778.252 2.447.153.746-.109 2.29-.937 2.612-1.84.321-.904.321-1.68.225-1.84-.096-.16-.353-.25-.705-.43s-2.083-1.028-2.404-1.144c-.321-.117-.554-.175-.787.175-.233.35-.902 1.144-1.107 1.378-.205.234-.41.263-.762.088-.352-.175-1.488-.548-2.83-1.748-1.042-.93-1.746-2.078-1.951-2.43-.205-.353-.022-.544.154-.72.158-.158.352-.41.529-.615.176-.205.234-.35.352-.584.117-.234.059-.438-.03-.614-.088-.175-.673-1.68-.934-2.28z"/>
-                    </svg>
-                    Order on WhatsApp
-                  </a>
-                )}
-              </div>
-
-              {/* Specifications table */}
-              <div className="pt-4 border-t border-border/10 space-y-3">
-                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">Specifications</label>
-                <div className="border border-border/40 overflow-hidden bg-white text-xs">
-                  <table className="w-full text-left border-collapse">
-                    <tbody>
-                      {[
-                        { label: 'Color', value: selectedColourId ? (product.colors?.find(c => c.id === selectedColourId)?.name || 'Mustard Yellow') : 'Mustard Yellow' },
-                        { label: 'Saree Fabric', value: product.name.includes('Organza') ? 'Pure Organza Silk' : (product.name.includes('Banarasi') ? 'Pure Banarasi Silk' : 'Kanchipuram Silk') },
-                        { label: 'Zari Work Type', value: 'Fine Gold Zari Embroidered Borders' },
-                        { label: 'Blouse Type', value: 'Unstitched Blouse Material Included' },
-                        { label: 'Blouse Length', value: '80 Centimeters (0.8 Meters)' },
-                        { label: 'Saree Length', value: '5.5 Meters' },
-                        { label: 'Occasion', value: 'Bridal, Wedding, Festive Wear' },
-                        { label: 'Care Instructions', value: 'Dry Clean Only' },
-                      ].map((spec, idx) => (
-                        <tr key={idx} className="border-b border-border/20 last:border-b-0 hover:bg-[#f9f6f0]/50 transition-colors">
-                          <td className="py-2.5 px-4 font-bold text-muted-foreground uppercase tracking-wider text-[9px] w-1/3 bg-[#fdf9f2]/40 border-r border-border/20">{spec.label}</td>
-                          <td className="py-2.5 px-4 text-[#1a1a1a] font-medium">{spec.value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
               </div>
 
             </div>
@@ -955,24 +916,9 @@ export default function ProductDetailPage() {
 
         </div>
 
-        {/* Trust Badges */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { icon: Truck, label: 'Free Delivery', desc: 'On orders above ₹499' },
-            { icon: Shield, label: 'Secure Payment', desc: '100% secure checkout' },
-            { icon: Package, label: 'Easy Returns', desc: '7-day return policy' },
-            { icon: Star, label: 'Premium Quality', desc: 'Authentic products' },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-3 p-4 rounded-none border border-border/30 bg-card/50 backdrop-blur-sm hover:border-[#c2410c]/20 transition-all duration-300">
-              <div className="w-10 h-10 rounded-none bg-[#c2410c]/5 flex items-center justify-center flex-shrink-0">
-                <item.icon className="w-5 h-5 text-[#c2410c]" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-foreground">{item.label}</p>
-                <p className="text-xs text-muted-foreground">{item.desc}</p>
-              </div>
-            </div>
-          ))}
+        {/* Features Carousel (Scrolling Marquee) */}
+        <div className="mt-16">
+          <FeaturesCarousel features={companyDetails?.features} />
         </div>
 
         <div className="mt-20">

@@ -459,6 +459,13 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                         </div>
                     </section>
 
+                    {/* Interactive 3D Fabric Explorer */}
+                    <div className="w-full relative z-10 my-4">
+                        <SilkShowcaseCanvas />
+                    </div>
+
+                    <SectionDivider />
+
                     {/* Categories Showcase Section */}
                     <section className="py-12 bg-white relative z-10 border-y border-border/20">
                         <div className="container mx-auto px-4 text-center space-y-10">
@@ -500,13 +507,6 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                             </div>
                         </div>
                     </section>
-
-                    <SectionDivider />
-
-                    {/* Interactive 3D Fabric Explorer */}
-                    <div className="w-full relative z-10 my-4">
-                        <SilkShowcaseCanvas />
-                    </div>
 
                     <SectionDivider />
 

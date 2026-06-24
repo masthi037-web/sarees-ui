@@ -2,23 +2,33 @@
 import { categories } from "@/data/products";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import type { Product, ProductWithImage } from "@/lib/types";
+import { fetchCategories } from "@/services/product.service";
 
 export async function getRecommendationsAction(
   deliveryTime?: string,
   categoryId?: string,
-  excludeProductId?: string
+  excludeProductId?: string,
+  companyId?: string
 ): Promise<ProductWithImage[]> {
   try {
     let targetCategories = categories;
+
+    if (companyId) {
+      const apiCategories = await fetchCategories(companyId, deliveryTime, true);
+      if (apiCategories && apiCategories.length > 0) {
+        targetCategories = apiCategories;
+      }
+    }
+
     if (categoryId) {
-      targetCategories = categories.filter(c => String(c.id) === String(categoryId));
-      if (targetCategories.length === 0) {
-        targetCategories = categories;
+      const filtered = targetCategories.filter(c => String(c.id) === String(categoryId));
+      if (filtered.length > 0) {
+        targetCategories = filtered;
       }
     }
 
     let allProducts: Product[] = targetCategories.flatMap(category =>
-      category.catalogs.flatMap(catalog => catalog.products)
+      (category.catalogs || []).flatMap(catalog => catalog.products || [])
     );
 
     if (excludeProductId) {
@@ -27,8 +37,11 @@ export async function getRecommendationsAction(
 
     // Graceful fallback if no products found in target category
     if (allProducts.length === 0) {
-      allProducts = categories.flatMap(category =>
-        category.catalogs.flatMap(catalog => catalog.products)
+      const fallbackCategories = companyId 
+        ? (await fetchCategories(companyId, deliveryTime, true) || []) 
+        : categories;
+      allProducts = fallbackCategories.flatMap(category =>
+        (category.catalogs || []).flatMap(catalog => catalog.products || [])
       );
       if (excludeProductId) {
         allProducts = allProducts.filter(p => String(p.id) !== String(excludeProductId));
