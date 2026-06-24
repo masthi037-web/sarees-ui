@@ -554,8 +554,7 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                                 return null;
                             }
 
-                            // Curate top 10 products as preview (highlights)
-                            const previewProducts = catProducts.slice(0, 10);
+                            const previewProducts = catProducts;
                             const catSlug = slugify(category.name);
 
                             return (
@@ -579,9 +578,9 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                                         </button>
                                     </div>
 
-                                    <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-6">
                                         {previewProducts.map((product) => (
-                                            <div key={product.id} className="w-[280px] md:w-[320px] flex-shrink-0 snap-start">
+                                            <div key={product.id}>
                                                 <ProductCard product={product} hideDescription={true} />
                                             </div>
                                         ))}
