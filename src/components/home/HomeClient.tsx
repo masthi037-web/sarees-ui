@@ -17,7 +17,6 @@ import { ProductInitializer } from '@/components/providers/ProductInitializer';
 import { useProduct } from '@/hooks/use-product';
 import { useTenant } from '@/components/providers/TenantContext';
 import { MOCK_TENANT_CATEGORIES } from '@/data/mock-tenant-data';
-import { CouponCarousel } from '@/components/home/CouponCarousel';
 import { WhatsAppButton } from '@/components/common/WhatsAppButton';
 import { SilkShowcaseCanvas } from '@/components/home/SilkShowcaseCanvas';
 import { SectionDivider } from '@/components/common/SectionDivider';
@@ -326,8 +325,6 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                 {isLoggedIn && userRole?.includes('CUSTOMER') && companyDetails?.companyPhone && (
                     <WhatsAppButton phoneNumber={companyDetails.companyPhone} companyName={companyDetails.companyName} />
                 )}
-
-                <CouponCarousel companyCoupon={companyDetails?.companyCoupon} />
 
                 <div className="container mx-auto px-4 relative z-10 space-y-20">
                     <section id="shop-now" className="scroll-mt-24">
