@@ -510,75 +510,80 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
 
                     <SectionDivider />
 
-                    {activeCategories.map((category) => {
-                        const catProducts = category.catalogs.flatMap(catalog =>
-                            catalog.products.map(p => {
-                                const image = imageMap.get(p.imageId);
-                                return {
-                                    ...p,
-                                    imageHint: image?.imageHint || 'product image',
-                                    imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
-                                };
-                            })
-                        );
+                    {(() => {
+                        const sareesCat = activeCategories.find(c => c.name.toLowerCase() === 'sarees' || slugify(c.name) === 'sarees');
+                        const targetCategories = sareesCat ? [sareesCat] : (activeCategories.length > 0 ? [activeCategories[0]] : []);
+                        
+                        return targetCategories.map((category) => {
+                            const catProducts = category.catalogs.flatMap(catalog =>
+                                catalog.products.map(p => {
+                                    const image = imageMap.get(p.imageId);
+                                    return {
+                                        ...p,
+                                        imageHint: image?.imageHint || 'product image',
+                                        imageUrl: resolveImageUrl(p.productImage || (p.images && p.images.length > 0 ? p.images[0] : '') || '')
+                                    };
+                                })
+                            );
 
-                        if (catProducts.length === 0) {
-                            if (isLoadingCategory[category.id]) {
-                                return (
-                                    <div key={category.id} className="space-y-6 py-10">
-                                        <div className="flex items-center justify-between border-b border-[#f2f2f2] pb-4">
-                                            <div className="space-y-2">
-                                                <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1">
-                                                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                                                    <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">{category.name}</span>
+                            if (catProducts.length === 0) {
+                                if (isLoadingCategory[category.id]) {
+                                    return (
+                                        <div key={category.id} className="space-y-6 py-10">
+                                            <div className="flex items-center justify-between border-b border-[#f2f2f2] pb-4">
+                                                <div className="space-y-2">
+                                                    <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1">
+                                                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                                                        <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">{category.name}</span>
+                                                    </div>
+                                                    <h3 className="font-headline text-3xl font-semibold text-[#1a1a1a] uppercase tracking-wide">
+                                                        {category.name} Highlights
+                                                    </h3>
                                                 </div>
-                                                <h3 className="font-headline text-3xl font-semibold text-[#1a1a1a] uppercase tracking-wide">
-                                                    {category.name} Highlights
-                                                </h3>
+                                                <Loader2 className="h-6 w-6 animate-spin text-primary" />
                                             </div>
-                                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
                                         </div>
-                                    </div>
-                                );
+                                    );
+                                }
+                                return null;
                             }
-                            return null;
-                        }
 
-                        // Curate top 5 products as preview
-                        const previewProducts = catProducts.slice(0, 5);
-                        const catSlug = slugify(category.name);
+                            // Curate top 10 products as preview (highlights)
+                            const previewProducts = catProducts.slice(0, 10);
+                            const catSlug = slugify(category.name);
 
-                        return (
-                            <section key={category.id} className="space-y-8 scroll-mt-24">
-                                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-[#f2f2f2] pb-4">
-                                    <div>
-                                        <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1 mb-2">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">Current Edit</span>
+                            return (
+                                <section key={category.id} className="space-y-8 scroll-mt-24">
+                                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-[#f2f2f2] pb-4">
+                                        <div>
+                                            <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1 mb-2">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">Current Edit</span>
+                                            </div>
+                                            <h3 className="font-headline text-3xl font-semibold text-[#1a1a1a] uppercase tracking-wide">
+                                                {category.name} Highlights
+                                            </h3>
                                         </div>
-                                        <h3 className="font-headline text-3xl font-semibold text-[#1a1a1a] uppercase tracking-wide">
-                                            {category.name} Highlights
-                                        </h3>
+                                        <button
+                                            onClick={() => router.push(`/category/${catSlug}`)}
+                                            className="group inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary border-b border-primary pb-0.5 hover:text-[#1a1a1a] hover:border-[#1a1a1a] transition-all duration-300"
+                                        >
+                                            Explore Full Collection
+                                            <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+                                        </button>
                                     </div>
-                                    <button
-                                        onClick={() => router.push(`/category/${catSlug}`)}
-                                        className="group inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary border-b border-primary pb-0.5 hover:text-[#1a1a1a] hover:border-[#1a1a1a] transition-all duration-300"
-                                    >
-                                        Explore Full Collection
-                                        <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-                                    </button>
-                                </div>
 
-                                <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
-                                    {previewProducts.map((product) => (
-                                        <div key={product.id} className="w-[280px] md:w-[320px] flex-shrink-0 snap-start">
-                                            <ProductCard product={product} hideDescription={true} />
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        );
-                    })}
+                                    <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                                        {previewProducts.map((product) => (
+                                            <div key={product.id} className="w-[280px] md:w-[320px] flex-shrink-0 snap-start">
+                                                <ProductCard product={product} hideDescription={true} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            );
+                        });
+                    })()}
                 </div>
             </div>
         </div>
