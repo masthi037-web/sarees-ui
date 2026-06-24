@@ -57,10 +57,9 @@ export async function getRecommendationsAction(
         allProducts = allProducts.filter(p => String(p.id) !== String(excludeProductId));
       }
     }
-
     // Shuffle array
     const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 4);
+    const selected = shuffled;
 
     const imageMap = new Map(PlaceHolderImages.map(img => [img.id, img]));
 
