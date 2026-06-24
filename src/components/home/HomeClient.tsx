@@ -17,7 +17,6 @@ import { ProductInitializer } from '@/components/providers/ProductInitializer';
 import { useProduct } from '@/hooks/use-product';
 import { useTenant } from '@/components/providers/TenantContext';
 import { MOCK_TENANT_CATEGORIES } from '@/data/mock-tenant-data';
-import { FeaturesCarousel } from '@/components/home/FeaturesCarousel';
 import { CouponCarousel } from '@/components/home/CouponCarousel';
 import { WhatsAppButton } from '@/components/common/WhatsAppButton';
 import { SilkShowcaseCanvas } from '@/components/home/SilkShowcaseCanvas';
@@ -462,10 +461,6 @@ export default function HomeClient({ initialCategories, companyDetails, fetchAll
                             </div>
                         </div>
                     </section>
-
-                    <div className="animate-in fade-in slide-in-from-top-4 duration-700">
-                        <FeaturesCarousel features={companyDetails?.features} />
-                    </div>
 
                     {/* Categories Showcase Section */}
                     <section className="py-12 bg-white relative z-10 border-y border-border/20">

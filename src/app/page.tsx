@@ -10,6 +10,7 @@ import { resolveTenantConfig } from '@/config/tenant-config';
 import { OfferBannerSlider } from '@/components/home/OfferBannerSlider';
 import { SectionDivider } from '@/components/common/SectionDivider';
 import { Play } from 'lucide-react';
+import { FeaturesCarousel } from '@/components/home/FeaturesCarousel';
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
@@ -73,6 +74,9 @@ export default async function Home() {
     <div className="bg-transparent min-h-screen">
       {/* Slider right below navbar */}
       <OfferBannerSlider />
+
+      {/* Scrolling features banner */}
+      <FeaturesCarousel features={company?.features} />
 
       <SectionDivider />
 
