@@ -19,6 +19,7 @@ const RecommendationSkeleton = () => (
 );
 
 import { useCart } from '@/hooks/use-cart';
+import { useTenant } from '@/components/providers/TenantContext';
 
 export default function Recommendations({
   categoryId,
@@ -30,6 +31,9 @@ export default function Recommendations({
   const [recommendedProducts, setRecommendedProducts] = useState<ProductWithImage[]>([]);
   const [loading, setLoading] = useState(true);
   const { companyDetails } = useCart();
+  const tenant = useTenant();
+
+  const activeCompanyId = tenant.companyId || companyDetails?.companyId;
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -38,14 +42,14 @@ export default function Recommendations({
         companyDetails?.deliveryBetween,
         categoryId,
         currentProductId,
-        companyDetails?.companyId
+        activeCompanyId
       );
       setRecommendedProducts(products);
       setLoading(false);
     };
 
     fetchRecommendations();
-  }, [categoryId, currentProductId, companyDetails?.deliveryBetween, companyDetails?.companyId]);
+  }, [categoryId, currentProductId, companyDetails?.deliveryBetween, activeCompanyId]);
 
   if (loading) {
     return <RecommendationSkeleton />;

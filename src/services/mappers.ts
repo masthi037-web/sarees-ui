@@ -29,7 +29,7 @@ export function mapApiCategoriesToAppCategories(apiCategories: any[], deliveryTi
         const productsAtCategoryLevel = item.products || item.productList || item.product_list || [];
 
         if (nestedCatalogues.length > 0) {
-            const mappedCatalogs = nestedCatalogues.map((c: any) => mapApiCatalogueToAppCatalog(c, deliveryTime));
+            const mappedCatalogs = nestedCatalogues.map((c: any) => mapApiCatalogueToAppCatalog(c, deliveryTime, catId));
             appCat.catalogs.push(...mappedCatalogs);
 
             // Prefer picking up name/image from the parent category object
@@ -38,7 +38,7 @@ export function mapApiCategoriesToAppCategories(apiCategories: any[], deliveryTi
         }
         // 2. Handle Flat Catalogue Object (Single Category Fetch Style)
         else if (item.catalogueId || item.catalogue_id) {
-            appCat.catalogs.push(mapApiCatalogueToAppCatalog(item, deliveryTime));
+            appCat.catalogs.push(mapApiCatalogueToAppCatalog(item, deliveryTime, catId));
         }
         // 3. Handle Products Directly under Category
         else if (productsAtCategoryLevel.length > 0) {
@@ -46,7 +46,7 @@ export function mapApiCategoriesToAppCategories(apiCategories: any[], deliveryTi
                 id: `default-${catId}`,
                 name: 'All Products',
                 catalogueImage: item.categoryImage || item.image || '',
-                products: productsAtCategoryLevel.map((p: any) => mapApiProductToAppProduct(p, deliveryTime))
+                products: productsAtCategoryLevel.map((p: any) => mapApiProductToAppProduct(p, deliveryTime, catId))
             });
         }
     });
@@ -54,19 +54,19 @@ export function mapApiCategoriesToAppCategories(apiCategories: any[], deliveryTi
     return Array.from(categoryMap.values());
 }
 
-export function mapApiCatalogueToAppCatalog(apiCat: any, deliveryTime?: string): AppCatalog {
+export function mapApiCatalogueToAppCatalog(apiCat: any, deliveryTime?: string, categoryId?: string): AppCatalog {
     const catalogId = String(apiCat.catalogueId || apiCat.id || apiCat.catalogue_id || '');
     const products = apiCat.products || apiCat.productList || apiCat.product_list || [];
 
     return {
         id: catalogId,
         name: apiCat.catalogueName || apiCat.name || '',
-        products: products.map((p: any) => mapApiProductToAppProduct(p, deliveryTime)),
+        products: products.map((p: any) => mapApiProductToAppProduct(p, deliveryTime, categoryId)),
         catalogueImage: apiCat.catalogueImage || apiCat.image || ''
     };
 }
 
-export function mapApiProductToAppProduct(apiProd: ApiProduct, deliveryTime?: string): AppProduct {
+export function mapApiProductToAppProduct(apiProd: ApiProduct, deliveryTime?: string, categoryId?: string): AppProduct {
     // Logic to determine price: use the first pricing option or default to 0
     const firstPricing = apiProd.productSize && apiProd.productSize.length > 0
         ? apiProd.productSize[0]
@@ -160,6 +160,8 @@ export function mapApiProductToAppProduct(apiProd: ApiProduct, deliveryTime?: st
             image: c.productPics,
             status: c.colourStatus,
             colourStatus: c.colourStatus
-        }))
+        })),
+        categoryId: categoryId || (apiProd.catalogueId ? String(apiProd.catalogueId) : undefined),
+        catalogueId: apiProd.catalogueId ? String(apiProd.catalogueId) : undefined
     };
 }

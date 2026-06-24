@@ -70,6 +70,8 @@ export type Product = {
   productStatus?: string;
   productType?: string;
   reviews?: Review[];
+  categoryId?: string;
+  catalogueId?: string;
 };
 
 export type ProductWithImage = Product & {

@@ -178,9 +178,11 @@ export default function ProductDetailPage() {
         };
       }
 
-      if (!foundProduct && companyDetails?.companyId) {
+      const activeCompanyId = tenant.companyId || companyDetails?.companyId;
+
+      if (!foundProduct && activeCompanyId) {
         try {
-          const fetchedCategories = await fetchCategories(companyDetails.companyId, companyDetails.deliveryBetween);
+          const fetchedCategories = await fetchCategories(activeCompanyId, companyDetails?.deliveryBetween);
           const allApiProducts = fetchedCategories.flatMap(c => c.catalogs.flatMap(ca => ca.products));
           const apiProduct = allApiProducts.find(p => String(p.id) === String(id));
 
@@ -214,8 +216,8 @@ export default function ProductDetailPage() {
         }
       }
 
-      let foundCategoryId: string | undefined;
-      if (foundProduct) {
+      let foundCategoryId: string | undefined = foundProduct?.categoryId;
+      if (!foundCategoryId && foundProduct) {
         // search mockCategories
         const mockCat = mockCategories.find(c =>
           c.catalogs.some(ca =>
@@ -227,9 +229,9 @@ export default function ProductDetailPage() {
         }
 
         // search API categories if present
-        if (!foundCategoryId && companyDetails?.companyId) {
+        if (!foundCategoryId && activeCompanyId) {
           try {
-            const fetchedCategories = await fetchCategories(companyDetails.companyId, companyDetails.deliveryBetween);
+            const fetchedCategories = await fetchCategories(activeCompanyId, companyDetails?.deliveryBetween);
             const apiCat = fetchedCategories.find(c =>
               c.catalogs.some(ca =>
                 ca.products.some(p => String(p.id) === String(foundProduct!.id))
