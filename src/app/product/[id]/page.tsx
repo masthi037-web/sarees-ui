@@ -268,23 +268,6 @@ export default function ProductDetailPage() {
         if (mockCat) {
           foundCategoryId = mockCat.id;
         }
-
-        // search API categories if present
-        if (!foundCategoryId && activeCompanyId) {
-          try {
-            const fetchedCategories = await fetchCategories(activeCompanyId, companyDetails?.deliveryBetween);
-            const apiCat = fetchedCategories.find(c =>
-              c.catalogs.some(ca =>
-                ca.products.some(p => String(p.id) === String(foundProduct!.id))
-              )
-            );
-            if (apiCat) {
-              foundCategoryId = String(apiCat.id);
-            }
-          } catch (e) {
-            console.error("Error looking up API category", e);
-          }
-        }
       }
 
       if (isMounted) {

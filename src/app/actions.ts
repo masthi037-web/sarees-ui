@@ -11,16 +11,28 @@ export async function getRecommendationsAction(
   companyId?: string
 ): Promise<ProductWithImage[]> {
   try {
-    let targetCategories = categories;
+    let targetCategories: any[] = categories;
 
     if (companyId) {
-      const apiCategories = await fetchCategories(companyId, deliveryTime, true);
-      if (apiCategories && apiCategories.length > 0) {
-        targetCategories = apiCategories;
+      if (categoryId) {
+        // Fetch products only for the specific active category
+        const { fetchProductsByCategory } = await import('@/services/product.service');
+        const catData = await fetchProductsByCategory(categoryId, deliveryTime);
+        if (catData) {
+          targetCategories = [catData];
+        } else {
+          targetCategories = [];
+        }
+      } else {
+        // Fallback: fetch categories list without preloading all catalogs/products
+        const apiCategories = await fetchCategories(companyId, deliveryTime, false);
+        if (apiCategories && apiCategories.length > 0) {
+          targetCategories = apiCategories;
+        }
       }
     }
 
-    if (categoryId) {
+    if (categoryId && targetCategories.length > 0) {
       const filtered = targetCategories.filter(c => String(c.id) === String(categoryId));
       if (filtered.length > 0) {
         targetCategories = filtered;
@@ -28,7 +40,7 @@ export async function getRecommendationsAction(
     }
 
     let allProducts: Product[] = targetCategories.flatMap(category =>
-      (category.catalogs || []).flatMap(catalog => catalog.products || [])
+      (category.catalogs || []).flatMap((catalog: any) => catalog.products || [])
     );
 
     if (excludeProductId) {
@@ -36,12 +48,10 @@ export async function getRecommendationsAction(
     }
 
     // Graceful fallback if no products found in target category
-    if (allProducts.length === 0) {
-      const fallbackCategories = companyId 
-        ? (await fetchCategories(companyId, deliveryTime, true) || []) 
-        : categories;
+    if (allProducts.length === 0 && companyId) {
+      const fallbackCategories = await fetchCategories(companyId, deliveryTime, false);
       allProducts = fallbackCategories.flatMap(category =>
-        (category.catalogs || []).flatMap(catalog => catalog.products || [])
+        (category.catalogs || []).flatMap((catalog: any) => catalog.products || [])
       );
       if (excludeProductId) {
         allProducts = allProducts.filter(p => String(p.id) !== String(excludeProductId));
