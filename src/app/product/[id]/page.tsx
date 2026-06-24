@@ -503,11 +503,10 @@ export default function ProductDetailPage() {
       height: `${lensH}px`,
     });
 
+    const scale = width / lensW;
     setZoomStyle({
-      backgroundImage: `url(${productImages[activeImageIdx]})`,
-      backgroundPosition: `${px}% ${py}%`,
-      backgroundSize: `${(width / lensW) * 100}% ${(height / lensH) * 100}%`,
-      backgroundRepeat: 'no-repeat',
+      transform: `scale(${scale}) translate(${-lx}px, ${-ly}px)`,
+      transformOrigin: '0 0',
     });
   };
 
@@ -610,10 +609,14 @@ export default function ProductDetailPage() {
           <div className="order-3 lg:order-3 relative min-h-[520px]">
             {/* Zoom Display Window - Overlays details area when hovered */}
             {isHovered && (
-              <div 
-                className="absolute top-0 left-0 w-full aspect-[4/5] bg-white border border-border/40 shadow-2xl z-30 overflow-hidden hidden lg:block"
-                style={zoomStyle}
-              />
+              <div className="absolute top-0 left-0 w-full aspect-[4/5] bg-white border border-border/40 shadow-2xl z-30 overflow-hidden hidden lg:block">
+                <img
+                  src={productImages[activeImageIdx]}
+                  alt={product.name}
+                  className="w-full h-full object-cover animate-in fade-in duration-200"
+                  style={zoomStyle}
+                />
+              </div>
             )}
 
             {/* Normal Details Container */}
