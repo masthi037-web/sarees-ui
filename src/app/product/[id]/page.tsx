@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -11,8 +11,7 @@ import { Star, Heart, Minus, Plus, ArrowLeft, Loader2, Search, Check, Package, T
 import { useWishlist } from '@/hooks/use-wishlist';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-import { ProductImageCarousel } from '@/components/products/ProductImageCarousel';
+import { cn, resolveImageUrl, slugify } from '@/lib/utils';
 import Recommendations from '@/components/products/Recommendations';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
@@ -110,16 +109,7 @@ const ColourCard = ({
   </div>
 );
 
-const getReviewStats = (reviews: any[]) => {
-  if (!reviews || reviews.length === 0) return { average: 0, count: 0, distribution: [] };
-  const count = reviews.length;
-  const average = reviews.reduce((acc, r) => acc + r.rating, 0) / count;
-  const distribution = [5, 4, 3, 2, 1].map(star => ({
-    star,
-    percentage: (reviews.filter(r => Math.floor(r.rating) === star).length / count) * 100
-  }));
-  return { average, count, distribution };
-};
+
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -133,11 +123,21 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductWithImage | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
 
   const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null);
   const [selectedSizeColourId, setSelectedSizeColourId] = useState<string | null>(null);
   const [selectedColourId, setSelectedColourId] = useState<string>("");
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
+
+  // Image Magnifier & Gallery Zoom States
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
+  const [lensStyle, setLensStyle] = useState<React.CSSProperties>({});
+  const [isHovered, setIsHovered] = useState(false);
+  const [customStitching, setCustomStitching] = useState(false);
+
+  const mainImageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -213,8 +213,39 @@ export default function ProductDetailPage() {
         }
       }
 
+      let foundCategoryId: string | undefined;
+      if (foundProduct) {
+        // search mockCategories
+        const mockCat = mockCategories.find(c =>
+          c.catalogs.some(ca =>
+            ca.products.some(p => String(p.id) === String(foundProduct!.id))
+          )
+        );
+        if (mockCat) {
+          foundCategoryId = mockCat.id;
+        }
+
+        // search API categories if present
+        if (!foundCategoryId && companyDetails?.companyId) {
+          try {
+            const fetchedCategories = await fetchCategories(companyDetails.companyId, companyDetails.deliveryBetween);
+            const apiCat = fetchedCategories.find(c =>
+              c.catalogs.some(ca =>
+                ca.products.some(p => String(p.id) === String(foundProduct!.id))
+              )
+            );
+            if (apiCat) {
+              foundCategoryId = String(apiCat.id);
+            }
+          } catch (e) {
+            console.error("Error looking up API category", e);
+          }
+        }
+      }
+
       if (isMounted) {
         setProduct(foundProduct || null);
+        setCategoryId(foundCategoryId);
 
         if (foundProduct && foundProduct.pricing && foundProduct.pricing.length > 0) {
           const firstPricing = foundProduct.pricing.find(p => p.sizeStatus !== 'OUTOFSTOCK' && p.sizeStatus !== 'INACTIVE') || foundProduct.pricing[0];
@@ -247,6 +278,63 @@ export default function ProductDetailPage() {
     return () => { isMounted = false; };
   }, [id, companyDetails]);
 
+  const currentPricingOption = product?.pricing?.find(p => p.id === selectedPricingId) || (product?.pricing?.[0]);
+  const availableSizeColours = currentPricingOption?.sizeColours || [];
+
+  // Generate complete images list dynamically for gallery selection
+  const productImages = useMemo(() => {
+    if (!product) return [''];
+    const imagesList: string[] = [];
+    const isDummyImage = (src: string) => {
+      if (!src) return true;
+      return src.includes('images.unsplash.com') && src.includes('w=800&q=80');
+    };
+
+    if (selectedSizeColourId) {
+      const sc = availableSizeColours.find(sc => sc.id === selectedSizeColourId);
+      if (sc && sc.productPics && sc.productPics.trim() !== "") imagesList.push(sc.productPics);
+    }
+
+    if (product.colors && product.colors.length > 0) {
+      const selected = product.colors.find(c => c.id === selectedColourId);
+      if (selected && selected.image && selected.image.trim() !== "" && !imagesList.includes(selected.image)) {
+        imagesList.push(selected.image);
+      }
+    }
+
+    const hasVariantImages = imagesList.length > 0;
+
+    if (product.images && product.images.length > 0) {
+      product.images.forEach(img => {
+        if (img && !imagesList.includes(img)) {
+          if (!hasVariantImages || !isDummyImage(img)) {
+            imagesList.push(img);
+          }
+        }
+      });
+    } else if (product.productImage && !imagesList.includes(product.productImage)) {
+      if (!hasVariantImages || !isDummyImage(product.productImage)) {
+        imagesList.push(product.productImage);
+      }
+    } else if (product.imageUrl && !imagesList.includes(product.imageUrl)) {
+      if (!hasVariantImages) {
+        imagesList.push(product.imageUrl);
+      }
+    }
+
+    if (imagesList.length === 0) {
+      imagesList.push(product.imageUrl || '');
+    }
+
+    return imagesList;
+  }, [product, selectedSizeColourId, selectedColourId, availableSizeColours]);
+
+  // Keep active index in range of variant image list updates
+  useEffect(() => {
+    if (activeImageIdx >= productImages.length) {
+      setActiveImageIdx(0);
+    }
+  }, [productImages, activeImageIdx]);
 
   if (loading) {
     return (
@@ -309,9 +397,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  const currentPricingOption = product.pricing?.find(p => p.id === selectedPricingId) || (product.pricing?.[0]);
-  const availableSizeColours = currentPricingOption?.sizeColours || [];
-
   const basePrice = currentPricingOption ? currentPricingOption.price : product.price;
   const sizeColoursPrice = availableSizeColours
     .filter(sc => sc.id === selectedSizeColourId)
@@ -339,13 +424,17 @@ export default function ProductDetailPage() {
     offerPercentage = Math.round(((originalPrice - effectiveBasePrice) / originalPrice) * 100);
   }
 
-  const finalPrice = effectiveBasePrice + sizeColoursPrice;
+  // Adjust total price based on optional custom stitching option
+  const finalPrice = effectiveBasePrice + sizeColoursPrice + (customStitching ? 1500 : 0);
   const hasDiscount = effectiveBasePrice < originalPrice;
 
   const handleAddToCart = () => {
     const variantInfo = { ...selectedVariants };
     if (currentPricingOption) {
       variantInfo['Quantity'] = currentPricingOption.quantity;
+    }
+    if (customStitching) {
+      variantInfo['Stitching'] = 'Custom Blouse Stitching (+₹1,500)';
     }
 
     const sizeColourObjects = availableSizeColours.filter(sc => sc.id === selectedSizeColourId);
@@ -372,7 +461,7 @@ export default function ProductDetailPage() {
     }
 
     addToCart(
-      { ...product, price: effectiveBasePrice, productSizeId: selectedPricingId || undefined },
+      { ...product, price: finalPrice, productSizeId: selectedPricingId || undefined },
       variantInfo,
       sizeColourObjects,
       colourToAdd
@@ -382,6 +471,46 @@ export default function ProductDetailPage() {
 
   const isWishlisted = isInWishlist(product.id);
 
+  // Mouse move handler for the lens magnifier box
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mainImageRef.current) return;
+    const elem = mainImageRef.current;
+    const { top, left, width, height } = elem.getBoundingClientRect();
+
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+
+    // Lens parameters
+    const lensW = 140;
+    const lensH = 175;
+
+    // Constrain magnifier box to main image boundaries
+    let lx = x - lensW / 2;
+    let ly = y - lensH / 2;
+
+    if (lx < 0) lx = 0;
+    if (ly < 0) ly = 0;
+    if (lx > width - lensW) lx = width - lensW;
+    if (ly > height - lensH) ly = height - lensH;
+
+    const px = (lx / (width - lensW)) * 100;
+    const py = (ly / (height - lensH)) * 100;
+
+    setLensStyle({
+      left: `${lx}px`,
+      top: `${ly}px`,
+      width: `${lensW}px`,
+      height: `${lensH}px`,
+    });
+
+    setZoomStyle({
+      backgroundImage: `url(${productImages[activeImageIdx]})`,
+      backgroundPosition: `${px}% ${py}%`,
+      backgroundSize: `${(width / lensW) * 100}% ${(height / lensH) * 100}%`,
+      backgroundRepeat: 'no-repeat',
+    });
+  };
+
   return (
     <div className="relative min-h-screen py-8">
       <div className="absolute inset-0 bg-dot-grid pointer-events-none" />
@@ -390,66 +519,58 @@ export default function ProductDetailPage() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="mb-6">
-          <Button variant="ghost" onClick={() => router.back()} className="text-muted-foreground group hover:text-accent rounded-xl">
+          <Button variant="ghost" onClick={() => router.back()} className="text-muted-foreground group hover:text-[#c2410c] rounded-none">
             <ArrowLeft className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
-          {/* Product Image Carousel */}
-          <div className="relative">
-            <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-secondary/5 border border-border/30 shadow-xl card-3d">
-              {(() => {
-                const imagesList: string[] = [];
+        {/* 3-Column Split Layout on Desktop: Thumbnails Gallery | Main Active Image | Product Details & Zoom Overlay */}
+        <div className="grid grid-cols-1 lg:grid-cols-[80px_1fr_1.1fr] gap-6 lg:gap-10 items-start">
+          
+          {/* Column 1: Vertical thumbnails list */}
+          <div className="flex flex-row lg:flex-col gap-2.5 overflow-x-auto lg:overflow-y-auto no-scrollbar order-2 lg:order-1 lg:max-h-[520px]">
+            {productImages.map((img, idx) => (
+              <button
+                key={idx}
+                onMouseEnter={() => setActiveImageIdx(idx)}
+                onClick={() => setActiveImageIdx(idx)}
+                className={cn(
+                  "relative h-16 w-12 lg:h-20 lg:w-16 border rounded-none overflow-hidden shrink-0 transition-all duration-300 bg-white",
+                  activeImageIdx === idx ? "border-[#c2410c] ring-1 ring-[#c2410c]" : "border-border/60 hover:border-primary/50"
+                )}
+              >
+                <img src={img} alt={`${product.name} - ${idx}`} className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
 
-                const isDummyImage = (src: string) => {
-                  if (!src) return true;
-                  return src.includes('images.unsplash.com') && src.includes('w=800&q=80');
-                };
+          {/* Column 2: Main showcase active image with hover lens overlay */}
+          <div className="order-1 lg:order-2 relative">
+            <div
+              ref={mainImageRef}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onMouseMove={handleMouseMove}
+              className="relative aspect-[4/5] w-full rounded-none overflow-hidden bg-[#f9f6f0] border border-border/30 cursor-crosshair select-none"
+            >
+              <img
+                src={productImages[activeImageIdx]}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
 
-                if (selectedSizeColourId) {
-                  const sc = availableSizeColours.find(sc => sc.id === selectedSizeColourId);
-                  if (sc && sc.productPics && sc.productPics.trim() !== "") imagesList.push(sc.productPics);
-                }
-
-                if (product.colors && product.colors.length > 0) {
-                  const selected = product.colors.find(c => c.id === selectedColourId);
-                  if (selected && selected.image && selected.image.trim() !== "" && !imagesList.includes(selected.image)) {
-                    imagesList.push(selected.image);
-                  }
-                }
-
-                const hasVariantImages = imagesList.length > 0;
-
-                if (product.images && product.images.length > 0) {
-                  product.images.forEach(img => {
-                    if (img && !imagesList.includes(img)) {
-                      if (!hasVariantImages || !isDummyImage(img)) {
-                        imagesList.push(img);
-                      }
-                    }
-                  });
-                } else if (product.productImage && !imagesList.includes(product.productImage)) {
-                  if (!hasVariantImages || !isDummyImage(product.productImage)) {
-                    imagesList.push(product.productImage);
-                  }
-                } else if (product.imageUrl && !imagesList.includes(product.imageUrl)) {
-                  if (!hasVariantImages) {
-                    imagesList.push(product.imageUrl);
-                  }
-                }
-
-                if (imagesList.length === 0) {
-                  imagesList.push(product.imageUrl || '');
-                }
-
-                return <ProductImageCarousel images={imagesList} alt={product.name} />
-              })()}
+              {/* Magnifier lens box overlay */}
+              {isHovered && (
+                <div
+                  className="absolute border border-black/25 bg-black/15 shadow-sm pointer-events-none"
+                  style={lensStyle}
+                />
+              )}
 
               {(product.productStatus === 'OUTOFSTOCK' || product.productStatus === 'INACTIVE') && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/5 backdrop-blur-[2px]">
-                  <div className="relative overflow-hidden px-8 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.1)] transform rotate-[-5deg] animate-in zoom-in duration-500">
+                  <div className="relative overflow-hidden px-8 py-3 rounded-none bg-white/10 backdrop-blur-md border border-white/20 shadow-md rotate-[-5deg]">
                     <span className={cn(
                       "relative z-10 text-xl font-black uppercase tracking-[0.2em] drop-shadow-sm",
                       product.productStatus === 'OUTOFSTOCK' ? "text-rose-500" : "text-slate-400"
@@ -475,111 +596,78 @@ export default function ProductDetailPage() {
                 variant="outline"
                 size="icon"
                 className="rounded-full h-10 w-10 bg-background/80 backdrop-blur-md border-border/50 hover:bg-background shadow-lg"
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast({ description: "Product link copied to clipboard!" });
+                }}
               >
                 <Share2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
-          {/* Product Details */}
-          <div className="flex flex-col gap-6">
-            <div>
+          {/* Column 3: Product Details & Dynamic Zoom View Panel overlay */}
+          <div className="order-3 lg:order-3 relative min-h-[520px]">
+            {/* Zoom Display Window - Overlays details area when hovered */}
+            {isHovered && (
+              <div 
+                className="absolute top-0 left-0 w-full aspect-[4/5] bg-white border border-border/40 shadow-2xl z-30 overflow-hidden hidden lg:block"
+                style={zoomStyle}
+              />
+            )}
+
+            {/* Normal Details Container */}
+            <div className="flex flex-col gap-5 text-[#1a1a1a]">
+              {/* Brand Header */}
               <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 mb-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse-gold" />
-                  <span className={cn(
-                    "text-[9px] font-bold tracking-[0.2em] uppercase",
-                    tenant.id.toLowerCase().includes('anantha') ? "text-accent font-display tracking-[0.3em]" : "text-accent"
-                  )}>
+                <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/5 px-3 py-1 mb-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">
                     {companyDetails?.companyName || 'Tirumala Sarees'}
                   </span>
                 </div>
-                <h1 className={cn(
-                  "text-3xl md:text-5xl font-headline font-bold text-foreground leading-[1.15] tracking-tight",
-                  tenant.id.toLowerCase().includes('anantha') ? "font-headline uppercase" : ""
-                )}>
+                <h1 className="text-2xl md:text-3xl font-headline font-bold text-foreground tracking-wide leading-tight">
                   {product.name}
                 </h1>
               </div>
 
-              <div className="flex items-baseline gap-3 mt-6">
-                <h2 className="text-3xl md:text-4xl font-headline font-bold text-accent tracking-tight">
+              {/* Pricing Details */}
+              <div className="flex items-baseline gap-3">
+                <h2 className="text-2xl md:text-3xl font-headline font-bold text-[#c2410c] tracking-tight">
                   ₹{(finalPrice).toFixed(2)}
                 </h2>
                 {hasDiscount && (
-                  <span className="text-base text-muted-foreground/60 line-through decoration-destructive/30 decoration-1">
-                    ₹{(originalPrice + sizeColoursPrice).toFixed(2)}
+                  <span className="text-sm text-muted-foreground/60 line-through decoration-destructive/30 decoration-1">
+                    ₹{(originalPrice + sizeColoursPrice + (customStitching ? 1500 : 0)).toFixed(2)}
                   </span>
                 )}
                 {hasDiscount && (
-                  <span className="text-xs font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-400 px-3 py-1.5 rounded-full shadow-lg animate-in zoom-in ml-2">
+                  <span className="text-[10px] font-bold text-white bg-emerald-600 px-2.5 py-1 rounded-none shadow-sm ml-2">
                     {offerPercentage}% OFF
                   </span>
                 )}
               </div>
 
-              <p className="text-[11px] font-medium text-muted-foreground/60 mt-2 flex items-center gap-2">
-                <Check className="w-3 h-3 text-accent" />
-                Taxes included. {companyDetails?.freeDeliveryCost && `Free shipping on orders over ₹${companyDetails.freeDeliveryCost}`}
+              <p className="text-[10px] font-semibold text-muted-foreground/60 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-[#c2410c]" />
+                Taxes included. {companyDetails?.freeDeliveryCost && `Free shipping on orders above ₹${companyDetails.freeDeliveryCost}`}
               </p>
 
-              {/* Rating */}
-              <div className="flex items-center gap-3 mt-4">
-                <div className="flex items-center gap-1">
-                  {(() => {
-                    const pid = Number(product.id) || product.id.toString().charCodeAt(0);
-                    const randomRating = 4.1 + (pid % 6) * 0.1;
-                    return [...Array(5)].map((_, i) => (
-                      <Star key={i} className={cn("h-4 w-4", i < Math.floor(randomRating) ? 'fill-accent text-accent' : 'text-muted-foreground/30 fill-muted-foreground/30')} />
-                    ));
-                  })()}
-                </div>
-                <span className="text-muted-foreground text-sm font-medium">
-                  ({(() => {
-                    const pid = Number(product.id) || product.id.toString().charCodeAt(0);
-                    return (4.1 + (pid % 6) * 0.1).toFixed(1);
-                  })()})
-                </span>
-                <span className="text-muted-foreground/40 text-sm">|</span>
-                <span className="text-muted-foreground text-sm">{(product.reviews?.length || 0) + Math.floor(Math.random() * 50)} reviews</span>
-              </div>
 
-              <p className="mt-6 text-muted-foreground leading-relaxed text-base font-light">{product.description}</p>
-            </div>
 
-            {/* Metadata Grid */}
-            {(product.ingredients || product.bestBefore) && (
-              <div className="grid grid-cols-2 gap-4 py-4 border-y border-border/30">
-                {product.ingredients && (
-                  <div className="space-y-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Ingredients</span>
-                    <p className="text-sm font-medium">{product.ingredients}</p>
-                  </div>
-                )}
-                {product.bestBefore && (
-                  <div className="space-y-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Shelf Life</span>
-                    <p className="text-sm font-medium">{product.bestBefore}</p>
-                  </div>
-                )}
-              </div>
-            )}
+              {/* Description */}
+              <p className="text-xs text-[#555] font-light leading-relaxed">{product.description}</p>
 
-            {product.instructions && (
-              <div className="rounded-2xl p-5 border border-border/30 bg-secondary/10">
-                <p className="text-sm text-muted-foreground">{product.instructions}</p>
-              </div>
-            )}
+              <Separator className="bg-border/20 my-2" />
 
-            <div className="space-y-8">
-              {/* Pricing Options */}
+              {/* Pricing Sizes Options */}
               {product.pricing && product.pricing.length > 0 && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-border/20 mb-4">
-                    <label className="text-xs font-black text-muted-foreground uppercase tracking-[0.15em]">Select Option</label>
-                    <span className="text-[9px] font-bold text-accent bg-accent/10 px-2.5 py-1 rounded-full border border-accent/20">REQUIRED</span>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between pb-1">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">Select Option</label>
+                    <span className="text-[8px] font-bold text-[#c2410c] bg-[#c2410c]/5 px-2 py-0.5 rounded-none border border-[#c2410c]/10">REQUIRED</span>
                   </div>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-3">
                     {(() => {
                       const prices = product.pricing.map(p => p.price);
                       const allPricesSame = prices.every(p => p === prices[0]);
@@ -602,37 +690,24 @@ export default function ProductDetailPage() {
                               }
                             }}
                             className={cn(
-                              "relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl border transition-all duration-300 h-14 card-3d",
+                              "relative flex flex-col items-center justify-center p-2 rounded-none border transition-all duration-300 h-12 text-xs",
                               isSelected && isActive
-                                ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/10 scale-[1.03]"
+                                ? "border-primary bg-primary/5 font-semibold"
                                 : isActive
-                                  ? "border-border/50 bg-background/50 hover:border-accent/20 hover:bg-accent/5"
-                                  : "cursor-not-allowed bg-muted/10 border-border/30 opacity-50"
+                                  ? "border-border/60 bg-white hover:border-primary/50"
+                                  : "cursor-not-allowed bg-muted/10 border-border/20 opacity-40"
                             )}
                           >
                             {!isActive && (
-                              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/5 rounded-2xl overflow-hidden">
-                                <div className="relative overflow-hidden px-1.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md border border-white/20 shadow-sm rotate-[-4deg]">
-                                  <span className="relative z-10 text-[8px] font-black uppercase tracking-wider text-rose-500 drop-shadow-sm">
-                                    Sold Out
-                                  </span>
-                                </div>
+                              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/5 rounded-none overflow-hidden">
+                                <span className="text-[8px] font-black uppercase text-rose-500">
+                                  Sold Out
+                                </span>
                               </div>
                             )}
-                            {isSelected && isActive && (
-                              <div className="absolute top-2 right-2 text-accent">
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
-                              </div>
-                            )}
-                            <span className={cn(
-                              "text-base font-bold transition-colors",
-                              isSelected && isActive ? "text-accent" : "text-foreground",
-                              !isActive && "line-through decoration-destructive/30 decoration-1"
-                            )}>
-                              <div className="font-medium text-center">
-                                {option.quantity}
-                                {option.price > 0 && !allPricesSame && isActive && <span className="ml-1 text-xs text-accent font-bold">+₹{option.price}</span>}
-                              </div>
+                            <span>
+                              {option.quantity}
+                              {option.price > 0 && !allPricesSame && isActive && <span className="ml-1 text-[10px] text-[#c2410c] font-bold">+₹{option.price}</span>}
                             </span>
                           </button>
                         );
@@ -642,42 +717,59 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Colour Selector */}
+              {/* Colors Options */}
               {product.colors && product.colors.length > 0 && (
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-border/20 mb-4">
-                    <label className="text-xs font-black text-muted-foreground uppercase tracking-[0.15em]">Select Color</label>
-                    <span className="text-[9px] font-bold text-accent bg-accent/10 px-2.5 py-1 rounded-full border border-accent/20">REQUIRED</span>
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between pb-1">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">Select Color</label>
+                    <span className="text-[8px] font-bold text-[#c2410c] bg-[#c2410c]/5 px-2 py-0.5 rounded-none border border-[#c2410c]/10">REQUIRED</span>
                   </div>
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-4 gap-2">
                     {product.colors.map((colour) => {
                       const isActive = colour.colourStatus !== 'INACTIVE' && colour.colourStatus !== 'OUTOFSTOCK';
-                      const statusLabel = colour.colourStatus === 'OUTOFSTOCK' ? 'Sold Out' : (colour.colourStatus === 'INACTIVE' ? 'Unavailable' : undefined);
+                      const isSelected = selectedColourId === colour.id;
 
                       return (
-                        <ColourCard
+                        <button
                           key={colour.id}
-                          name={colour.name}
-                          image={colour.image}
-                          isSelected={selectedColourId === colour.id}
-                          active={isActive}
-                          statusLabel={statusLabel}
-                          onClick={() => setSelectedColourId(colour.id)}
-                        />
+                          onClick={() => isActive && setSelectedColourId(colour.id)}
+                          className={cn(
+                            "relative flex flex-col items-center justify-center p-2 rounded-none border transition-all duration-300 h-16 text-center bg-white",
+                            isSelected && isActive
+                              ? "border-primary bg-primary/5 font-semibold"
+                              : isActive
+                                ? "border-border/30 bg-white hover:border-primary/50"
+                                : "cursor-not-allowed bg-muted/10 border-border/20 opacity-40"
+                          )}
+                        >
+                          {!isActive && (
+                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/5 rounded-none overflow-hidden">
+                              <span className="text-[8px] font-black uppercase text-rose-500">Sold Out</span>
+                            </div>
+                          )}
+                          <div className="w-8 h-8 rounded-full overflow-hidden border border-border/30 bg-[#f9f6f0]">
+                            {colour.image ? (
+                              <img src={colour.image} alt={colour.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[9px] text-muted-foreground">{colour.name.charAt(0)}</div>
+                            )}
+                          </div>
+                          <span className="text-[9px] font-bold uppercase tracking-tight text-foreground truncate w-full mt-1.5 px-0.5">{colour.name}</span>
+                        </button>
                       );
                     })}
                   </div>
                 </div>
               )}
 
-              {/* SizeColours */}
+              {/* Styles / SizeColours Selection */}
               {availableSizeColours.length > 0 && (
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-border/20 mb-4">
-                    <label className="text-xs font-black text-muted-foreground uppercase tracking-[0.15em]">Select Style</label>
-                    <span className="text-[9px] font-bold text-accent bg-accent/10 px-2.5 py-1 rounded-full border border-accent/20">REQUIRED</span>
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between pb-1">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">Select Style</label>
+                    <span className="text-[8px] font-bold text-[#c2410c] bg-[#c2410c]/5 px-2 py-0.5 rounded-none border border-[#c2410c]/10">REQUIRED</span>
                   </div>
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-4 gap-2">
                     {availableSizeColours.map(sc => {
                       const isSelected = selectedSizeColourId === sc.id;
                       const isActive = sc.sizeColourStatus !== 'INACTIVE' && sc.sizeColourStatus !== 'OUTOFSTOCK';
@@ -687,46 +779,29 @@ export default function ProductDetailPage() {
                           key={sc.id}
                           onClick={() => isActive && setSelectedSizeColourId(sc.id)}
                           className={cn(
-                            "relative flex flex-col items-center p-2 rounded-2xl border transition-all duration-300 h-[95px] card-3d",
+                            "relative flex flex-col items-center justify-center p-2 border rounded-none transition-all duration-300 h-20 text-center bg-white",
                             isSelected && isActive
-                              ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/10 scale-[1.03]"
+                              ? "border-primary bg-primary/5 font-semibold"
                               : isActive
-                                ? "border-border/30 bg-secondary/5 hover:border-accent/20 hover:bg-accent/5"
-                                : "cursor-not-allowed bg-muted/10 border-border/20 opacity-50"
+                                ? "border-border/30 bg-white hover:border-primary/50"
+                                : "cursor-not-allowed bg-muted/10 border-border/20 opacity-40"
                           )}
                         >
                           {!isActive && (
-                            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/5 rounded-2xl overflow-hidden">
-                              <div className="relative overflow-hidden px-1.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md border border-white/20 shadow-sm rotate-[-4deg]">
-                                <span className="relative z-10 text-[8px] font-black uppercase tracking-wider text-rose-500 drop-shadow-sm">
-                                  Sold Out
-                                </span>
-                              </div>
+                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/5 rounded-none overflow-hidden">
+                              <span className="text-[8px] font-black uppercase text-rose-500">Sold Out</span>
                             </div>
                           )}
-                          {isSelected && isActive && (
-                            <div className="absolute -top-2 -right-2 bg-accent text-navy-900 rounded-full p-1 shadow-lg z-10">
-                              <Check className="w-3 h-3" strokeWidth={3} />
-                            </div>
-                          )}
-                          <div className="relative w-11 h-11 mb-1.5 rounded-full overflow-hidden border-2 border-border/30 shadow-sm bg-white">
+                          <div className="w-8 h-8 rounded-full overflow-hidden border border-border/30 bg-white">
                             {sc.productPics ? (
                               <img src={sc.productPics} alt={sc.name} className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-muted-foreground/50">
-                                {sc.name.charAt(0)}
-                              </div>
+                              <div className="w-full h-full flex items-center justify-center text-[9px] text-muted-foreground">{sc.name.charAt(0)}</div>
                             )}
                           </div>
-                          <span className={cn(
-                            "text-xs font-bold tracking-tight line-clamp-1 w-full text-center px-1 mb-0.5 transition-colors",
-                            isSelected && isActive ? "text-accent" : "text-foreground",
-                            !isActive && "line-through decoration-destructive/30 decoration-1"
-                          )}>
-                            {sc.name}
-                          </span>
+                          <span className="text-[9px] font-bold uppercase tracking-tight text-foreground truncate w-full mt-1.5 px-0.5">{sc.name}</span>
                           {isActive && (
-                            <span className={cn("text-[10px] font-bold uppercase tracking-wider leading-none", isSelected ? "text-accent/80" : "text-muted-foreground")}>
+                            <span className="text-[8px] font-bold uppercase text-muted-foreground mt-0.5">
                               {sc.price > 0 ? `+₹${sc.price}` : "Standard"}
                             </span>
                           )}
@@ -736,16 +811,66 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* Bottom Bar */}
-            <div className="fixed bottom-[60px] left-0 right-0 p-5 bg-background/80 backdrop-blur-2xl border-t border-border/20 z-20 md:static md:p-0 md:bg-transparent md:border-0 shadow-[0_-20px_60px_rgba(0,0,0,0.1)]">
-              <div className="container mx-auto md:px-0">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex flex-col">
-                    <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-0.5">Estimated Total</p>
-                    <h2 className="text-2xl md:text-3xl font-headline font-bold text-accent tracking-tight">₹{(finalPrice * quantity).toFixed(2)}</h2>
+              {/* Blouse Stitching selection card */}
+              <div className="space-y-3 pt-3 border-t border-border/10">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">Blouse Stitching Service</label>
+                  <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-none border border-emerald-100 uppercase">OPTIONAL</span>
+                </div>
+                <button
+                  onClick={() => setCustomStitching(!customStitching)}
+                  className={cn(
+                    "w-full flex items-center justify-between p-3.5 border transition-all duration-300 rounded-none text-left cursor-pointer",
+                    customStitching
+                      ? "border-[#c2410c] bg-[#c2410c]/5 shadow-sm"
+                      : "border-border/40 bg-white hover:border-[#c2410c]/30"
+                  )}
+                >
+                  <div className="pr-3">
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Custom Blouse Stitching</h4>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">Tailored to your body measurements by our expert master weavers</p>
                   </div>
+                  <div className="text-right flex items-center gap-2.5 shrink-0">
+                    <span className="text-xs font-bold text-[#c2410c]">+ ₹1,500</span>
+                    <div className={cn(
+                      "w-4 h-4 border flex items-center justify-center rounded-none transition-all duration-300",
+                      customStitching ? "bg-[#c2410c] border-[#c2410c] text-white" : "border-border/60 bg-white"
+                    )}>
+                      {customStitching && <Check className="w-3 h-3 stroke-[3]" />}
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <Separator className="bg-border/20 my-2" />
+
+              {/* Quantity Counter & Checkout CTAs */}
+              <div className="space-y-4 pt-1">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">Estimated Total</span>
+                  <h2 className="text-2xl font-headline font-bold text-[#c2410c] tracking-tight">₹{(finalPrice * quantity).toFixed(2)}</h2>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  {/* Quantity Stepper */}
+                  <div className="flex items-center border border-border/60 h-12 bg-white select-none">
+                    <button
+                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                      className="px-3.5 h-full hover:bg-[#f9f6f0] text-muted-foreground hover:text-foreground transition-all duration-300 flex items-center justify-center border-r border-border/20"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className="w-10 text-center font-bold text-xs text-[#1a1a1a]">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(q => q + 1)}
+                      className="px-3.5 h-full hover:bg-[#f9f6f0] text-muted-foreground hover:text-foreground transition-all duration-300 flex items-center justify-center border-l border-border/20"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  {/* Add to Cart button */}
                   {(() => {
                     const selectedSizeColour = currentPricingOption?.sizeColours?.find(sc => sc.id === selectedSizeColourId);
                     const selectedColour = product.colors?.find(c => c.id === selectedColourId);
@@ -761,29 +886,71 @@ export default function ProductDetailPage() {
                         disabled={isOutOfStock}
                         size="lg"
                         className={cn(
-                          "flex-1 max-w-[280px] h-14 text-base font-bold rounded-2xl shadow-xl transition-all duration-300 active:scale-[0.98]",
+                          "flex-1 h-12 text-xs font-bold uppercase tracking-widest rounded-none shadow-sm transition-all duration-300",
                           isOutOfStock
                             ? "bg-muted text-muted-foreground cursor-not-allowed shadow-none"
-                            : "bg-accent text-navy-900 hover:bg-accent/90 shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30"
+                            : "bg-primary text-white hover:bg-primary/95 shadow-md"
                         )}
                       >
                         {isOutOfStock ? "Out of Stock" : (
                           <>
                             Add to Cart
-                            <Package className="ml-2 w-4 h-4" />
+                            <Package className="ml-2 w-3.5 h-3.5" />
                           </>
                         )}
                       </Button>
                     );
                   })()}
                 </div>
+
+                {/* Whatsapp Ordering button */}
+                {companyDetails?.companyPhone && (
+                  <a
+                    href={`https://wa.me/${companyDetails.companyPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi, I want to order this product: ${product.name} (Price: ₹${finalPrice}). Link: ${window.location.href}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full h-12 bg-[#075e54] hover:bg-[#128c7e] text-white flex items-center justify-center gap-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-sm"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.458L0 24zm6.59-20.372c-.224-.498-.46-.508-.673-.517-.215-.008-.46-.008-.705-.008-.246 0-.646.092-.983.46-.338.368-1.288 1.258-1.288 3.064 0 1.806 1.312 3.55 1.496 3.801.184.25 2.529 4.093 6.242 5.545.922.36 1.64.577 2.196.755.93.295 1.778.252 2.447.153.746-.109 2.29-.937 2.612-1.84.321-.904.321-1.68.225-1.84-.096-.16-.353-.25-.705-.43s-2.083-1.028-2.404-1.144c-.321-.117-.554-.175-.787.175-.233.35-.902 1.144-1.107 1.378-.205.234-.41.263-.762.088-.352-.175-1.488-.548-2.83-1.748-1.042-.93-1.746-2.078-1.951-2.43-.205-.353-.022-.544.154-.72.158-.158.352-.41.529-.615.176-.205.234-.35.352-.584.117-.234.059-.438-.03-.614-.088-.175-.673-1.68-.934-2.28z"/>
+                    </svg>
+                    Order on WhatsApp
+                  </a>
+                )}
               </div>
+
+              {/* Specifications table */}
+              <div className="pt-4 border-t border-border/10 space-y-3">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">Specifications</label>
+                <div className="border border-border/40 overflow-hidden bg-white text-xs">
+                  <table className="w-full text-left border-collapse">
+                    <tbody>
+                      {[
+                        { label: 'Color', value: selectedColourId ? (product.colors?.find(c => c.id === selectedColourId)?.name || 'Mustard Yellow') : 'Mustard Yellow' },
+                        { label: 'Saree Fabric', value: product.name.includes('Organza') ? 'Pure Organza Silk' : (product.name.includes('Banarasi') ? 'Pure Banarasi Silk' : 'Kanchipuram Silk') },
+                        { label: 'Zari Work Type', value: 'Fine Gold Zari Embroidered Borders' },
+                        { label: 'Blouse Type', value: 'Unstitched Blouse Material Included' },
+                        { label: 'Blouse Length', value: '80 Centimeters (0.8 Meters)' },
+                        { label: 'Saree Length', value: '5.5 Meters' },
+                        { label: 'Occasion', value: 'Bridal, Wedding, Festive Wear' },
+                        { label: 'Care Instructions', value: 'Dry Clean Only' },
+                      ].map((spec, idx) => (
+                        <tr key={idx} className="border-b border-border/20 last:border-b-0 hover:bg-[#f9f6f0]/50 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-muted-foreground uppercase tracking-wider text-[9px] w-1/3 bg-[#fdf9f2]/40 border-r border-border/20">{spec.label}</td>
+                          <td className="py-2.5 px-4 text-[#1a1a1a] font-medium">{spec.value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
             </div>
-            <div className="h-40 md:hidden"></div>
           </div>
+
         </div>
 
-        {/* Trust badges */}
+        {/* Trust Badges */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { icon: Truck, label: 'Free Delivery', desc: 'On orders above ₹499' },
@@ -791,9 +958,9 @@ export default function ProductDetailPage() {
             { icon: Package, label: 'Easy Returns', desc: '7-day return policy' },
             { icon: Star, label: 'Premium Quality', desc: 'Authentic products' },
           ].map((item) => (
-            <div key={item.label} className="flex items-center gap-3 p-4 rounded-2xl border border-border/30 bg-card/50 backdrop-blur-sm hover:border-accent/20 transition-all duration-300">
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                <item.icon className="w-5 h-5 text-accent" />
+            <div key={item.label} className="flex items-center gap-3 p-4 rounded-none border border-border/30 bg-card/50 backdrop-blur-sm hover:border-[#c2410c]/20 transition-all duration-300">
+              <div className="w-10 h-10 rounded-none bg-[#c2410c]/5 flex items-center justify-center flex-shrink-0">
+                <item.icon className="w-5 h-5 text-[#c2410c]" />
               </div>
               <div>
                 <p className="text-sm font-bold text-foreground">{item.label}</p>
@@ -803,67 +970,13 @@ export default function ProductDetailPage() {
           ))}
         </div>
 
-        {/* Reviews Section */}
-        <div className="mt-20">
-          <h2 className="font-headline text-3xl md:text-4xl font-bold mb-2">Customer Reviews</h2>
-          <p className="text-muted-foreground font-light mb-10">What our customers say about this product</p>
-          <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
-            <div className="md:col-span-2 space-y-4">
-              <div className="flex flex-col items-center justify-center rounded-2xl p-8 border border-border/30 bg-card/50 backdrop-blur-sm">
-                {(() => {
-                  const pid = Number(product.id) || product.id.toString().charCodeAt(0);
-                  const randomRating = 4.1 + (pid % 6) * 0.1;
-                  return (
-                    <>
-                      <p className="text-5xl font-headline font-bold text-foreground">{randomRating.toFixed(1)}</p>
-                      <div className="flex items-center gap-1 mt-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={cn("h-6 w-6", i < Math.floor(randomRating) ? 'fill-accent text-accent' : 'fill-muted-foreground/20 text-muted-foreground/20')} />
-                        ))}
-                      </div>
-                      <p className="text-muted-foreground text-sm mt-2">Based on {product.reviews?.length || 0} reviews</p>
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-            <div className="md:col-span-3">
-              <div className="space-y-4">
-                {(product.reviews || []).length > 0 ? (product.reviews || []).map((review) => (
-                  <div key={review.id} className="flex gap-4 p-5 rounded-2xl border border-border/20 bg-card/30 backdrop-blur-sm hover:border-border/40 transition-all">
-                    <Avatar className="h-10 w-10 border-2 border-border/30">
-                      <AvatarImage src={review.avatar} alt={review.author} />
-                      <AvatarFallback className="bg-accent/10 text-accent text-xs">{review.author ? review.author.charAt(0) : 'U'}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold text-foreground">{review.author}</p>
-                        <div className="flex items-center gap-0.5">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={cn("h-3.5 w-3.5", i < review.rating ? 'fill-accent text-accent' : 'fill-muted-foreground/20 text-muted-foreground/20')} />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{review.date}</p>
-                      <p className="mt-3 text-foreground/90 text-sm leading-relaxed">{review.text}</p>
-                    </div>
-                  </div>
-                )) : (
-                  <div className="text-center py-12 text-muted-foreground border border-dashed border-border/30 rounded-2xl">
-                    <p className="font-light">No reviews yet. Be the first to review!</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="mt-20">
           <h2 className="font-headline text-3xl md:text-4xl font-bold mb-2">You May Also Like</h2>
           <p className="text-muted-foreground font-light mb-8">Discover similar products</p>
-          <Recommendations />
+          <Recommendations categoryId={categoryId} currentProductId={product.id} />
         </div>
       </div>
     </div>
   );
 }
+

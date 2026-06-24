@@ -3,12 +3,37 @@ import { categories } from "@/data/products";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import type { Product, ProductWithImage } from "@/lib/types";
 
-export async function getRecommendationsAction(deliveryTime?: string): Promise<ProductWithImage[]> {
+export async function getRecommendationsAction(
+  deliveryTime?: string,
+  categoryId?: string,
+  excludeProductId?: string
+): Promise<ProductWithImage[]> {
   try {
-    // Fallback: Random Shuffle (No AI Key Required)
-    const allProducts: Product[] = categories.flatMap(category =>
+    let targetCategories = categories;
+    if (categoryId) {
+      targetCategories = categories.filter(c => String(c.id) === String(categoryId));
+      if (targetCategories.length === 0) {
+        targetCategories = categories;
+      }
+    }
+
+    let allProducts: Product[] = targetCategories.flatMap(category =>
       category.catalogs.flatMap(catalog => catalog.products)
     );
+
+    if (excludeProductId) {
+      allProducts = allProducts.filter(p => String(p.id) !== String(excludeProductId));
+    }
+
+    // Graceful fallback if no products found in target category
+    if (allProducts.length === 0) {
+      allProducts = categories.flatMap(category =>
+        category.catalogs.flatMap(catalog => catalog.products)
+      );
+      if (excludeProductId) {
+        allProducts = allProducts.filter(p => String(p.id) !== String(excludeProductId));
+      }
+    }
 
     // Shuffle array
     const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
@@ -21,7 +46,7 @@ export async function getRecommendationsAction(deliveryTime?: string): Promise<P
         const image = imageMap.get(product.imageId);
         return {
           ...product,
-          imageUrl: image?.imageUrl || '',
+          imageUrl: product.imageUrl || image?.imageUrl || '',
           imageHint: image?.imageHint || 'product image',
           deliveryTime: deliveryTime || product.deliveryTime || '30-45 min'
         };

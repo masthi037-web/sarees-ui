@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, Star, Clock, ShoppingBag, Sparkles, Tag } from 'lucide-react';
+import { Heart, Clock, ShoppingBag, Sparkles, Tag } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn, resolveImageUrl } from '@/lib/utils';
@@ -157,11 +157,7 @@ export const ProductCard = ({ product, hideDescription = false }: ProductCardPro
               </div>
             )}
 
-            {/* Rating Badge - Bottom Right */}
-            <div className="absolute bottom-2 right-2 z-10 bg-white px-1.5 py-[2px] rounded-none flex items-center gap-[3px] shadow-sm pointer-events-none border border-black/5">
-              <span className="text-[10px] font-bold text-[#333] leading-none mt-[1px]">{(4.1 + ((Number(product.id) || product.id.toString().charCodeAt(0)) % 6) * 0.1).toFixed(1)}</span>
-              <Star className="w-[10px] h-[10px] fill-[#059669] text-[#059669]" />
-            </div>
+
 
             {/* Status Overlay */}
             {isDisabled && (
@@ -329,18 +325,7 @@ export const ProductCard = ({ product, hideDescription = false }: ProductCardPro
 
           {/* Top Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2 z-10 w-[calc(100%-24px)] items-start pointer-events-none">
-            {/* Rating Badge */}
-            {(() => {
-              const pid = Number(product.id) || product.id.toString().charCodeAt(0);
-              const randomRating = 4.1 + (pid % 6) * 0.1;
 
-              return (
-                <div className="flex items-center gap-1 bg-background/85 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-foreground shadow-sm pointer-events-auto border border-white/50">
-                  <Star className="w-3 h-3 fill-accent text-accent" />
-                  <span>{randomRating.toFixed(1)}</span>
-                </div>
-              );
-            })()}
 
             {/* Offer Badge (Single) */}
             {(() => {
@@ -478,32 +463,7 @@ export const ProductCard = ({ product, hideDescription = false }: ProductCardPro
           </div>
 
 
-          {/* Rating Row (Classic positioning in body) */}
-          <div className="flex items-center gap-1 -mt-0.5">
-            {(() => {
-              // Deterministic Random Rating Logic based on Product ID
-              // Generates a rating between 4.1 and 4.6
-              const pid = Number(product.id) || product.id.toString().charCodeAt(0);
-              const randomRating = 4.1 + (pid % 6) * 0.1;
 
-              return (
-                <>
-                  <div className="flex text-primary">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={cn(
-                          "w-3 h-3 fill-current",
-                          i >= Math.floor(randomRating) && "text-muted-foreground/20 fill-muted-foreground/20"
-                        )}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-muted-foreground font-medium ml-1">({randomRating.toFixed(1)})</span>
-                </>
-              );
-            })()}
-          </div>
 
           {!hideDescription && (
             <div className="hidden md:block">

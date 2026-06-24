@@ -9,9 +9,8 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 
 export type FilterState = {
-    sortBy: 'recommended' | 'price_asc' | 'price_desc' | 'rating_desc' | 'newest';
+    sortBy: 'recommended' | 'price_asc' | 'price_desc' | 'newest';
     priceRange: [number, number];
-    minRating: number | null;
 };
 
 interface FilterSortSheetProps {
@@ -32,8 +31,7 @@ export function FilterSortSheet({ onApply, currentFilters, minPrice = 0, maxPric
     const handleReset = () => {
         const resetState: FilterState = {
             sortBy: 'recommended',
-            priceRange: [minPrice, maxPrice],
-            minRating: null
+            priceRange: [minPrice, maxPrice]
         };
         setFilters(resetState);
     };
@@ -72,10 +70,7 @@ export function FilterSortSheet({ onApply, currentFilters, minPrice = 0, maxPric
                                 <RadioGroupItem value="newest" id="sort-newest" />
                                 <Label htmlFor="sort-newest" className="flex-1 cursor-pointer py-1">Newest Arrivals</Label>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="rating_desc" id="sort-rating" />
-                                <Label htmlFor="sort-rating" className="flex-1 cursor-pointer py-1">Customer Rating</Label>
-                            </div>
+
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="price_asc" id="sort-price-asc" />
                                 <Label htmlFor="sort-price-asc" className="flex-1 cursor-pointer py-1">Price: Low to High</Label>
@@ -108,24 +103,7 @@ export function FilterSortSheet({ onApply, currentFilters, minPrice = 0, maxPric
                         />
                     </div>
 
-                    <Separator />
 
-                    {/* Rating */}
-                    <div className="space-y-4">
-                        <h4 className="font-semibold text-lg">Customer Ratings</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {[4, 3, 2, 1].map((rating) => (
-                                <Badge
-                                    key={rating}
-                                    variant={filters.minRating === rating ? "default" : "outline"}
-                                    className="cursor-pointer px-4 py-2 text-sm rounded-full transition-all"
-                                    onClick={() => setFilters({ ...filters, minRating: filters.minRating === rating ? null : rating })}
-                                >
-                                    {rating}+ Stars
-                                </Badge>
-                            ))}
-                        </div>
-                    </div>
                 </div>
 
                 <SheetFooter className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border flex flex-row gap-3 sm:static sm:p-0 sm:bg-transparent sm:border-0 sm:mt-8">

@@ -60,8 +60,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
         setSelectedCatalogs([]);
         setFilters({
             sortBy: 'recommended',
-            priceRange: [0, 20000],
-            minRating: null
+            priceRange: [0, 20000]
         });
     };
 
@@ -167,12 +166,11 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
 
     const [filters, setFilters] = useState<FilterState>({
         sortBy: 'recommended',
-        priceRange: [0, 20000],
-        minRating: null
+        priceRange: [0, 20000]
     });
 
     useEffect(() => {
-        setFilters({ sortBy: 'recommended', priceRange: [0, 20000], minRating: null });
+        setFilters({ sortBy: 'recommended', priceRange: [0, 20000] });
     }, [selectedCatalogId, selectedCategory]);
 
     const activeCategory = activeCategories.find(c => c.id === selectedCategory);
@@ -292,14 +290,12 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
         .filter(p => {
             if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
             if (p.price < filters.priceRange[0] || p.price > filters.priceRange[1]) return false;
-            if (filters.minRating && p.rating < filters.minRating) return false;
             return true;
         })
         .sort((a, b) => {
             switch (filters.sortBy) {
                 case 'price_asc': return a.price - b.price;
                 case 'price_desc': return b.price - a.price;
-                case 'rating_desc': return b.rating - a.rating;
                 case 'newest': return new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime();
                 default: return 0;
             }
@@ -571,32 +567,6 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                                         />
                                                         <span className={cn("group-hover:text-[#1a1a1a] transition-colors", isSelected && "font-bold text-[#1a1a1a]")}>{range.label}</span>
                                                     </label>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <Separator className="bg-[#f2f2f2]" />
-
-                                    {/* Filter by Ratings */}
-                                    <div className="space-y-3">
-                                        <h4 className="font-headline text-[11px] font-bold uppercase tracking-wider text-[#1a1a1a]">Ratings</h4>
-                                        <div className="flex flex-col gap-2 pt-1">
-                                            {[4, 3, 2].map((rating) => {
-                                                const isSelected = filters.minRating === rating;
-                                                return (
-                                                    <button
-                                                        key={rating}
-                                                        onClick={() => setFilters({ ...filters, minRating: isSelected ? null : rating })}
-                                                        className={cn(
-                                                            "text-left text-xs px-3 py-1.5 border transition-all duration-300 w-full",
-                                                            isSelected 
-                                                                ? "border-primary bg-primary/5 text-primary font-bold" 
-                                                                : "border-[#f2f2f2] text-[#555] hover:border-primary hover:text-primary"
-                                                        )}
-                                                    >
-                                                        {rating}+ Stars & Above
-                                                    </button>
                                                 );
                                             })}
                                         </div>

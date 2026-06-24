@@ -20,7 +20,13 @@ const RecommendationSkeleton = () => (
 
 import { useCart } from '@/hooks/use-cart';
 
-export default function Recommendations() {
+export default function Recommendations({
+  categoryId,
+  currentProductId,
+}: {
+  categoryId?: string;
+  currentProductId?: string;
+}) {
   const [recommendedProducts, setRecommendedProducts] = useState<ProductWithImage[]>([]);
   const [loading, setLoading] = useState(true);
   const { companyDetails } = useCart();
@@ -28,13 +34,17 @@ export default function Recommendations() {
   useEffect(() => {
     const fetchRecommendations = async () => {
       setLoading(true);
-      const products = await getRecommendationsAction(companyDetails?.deliveryBetween);
+      const products = await getRecommendationsAction(
+        companyDetails?.deliveryBetween,
+        categoryId,
+        currentProductId
+      );
       setRecommendedProducts(products);
       setLoading(false);
     };
 
     fetchRecommendations();
-  }, []);
+  }, [categoryId, currentProductId, companyDetails?.deliveryBetween]);
 
   if (loading) {
     return <RecommendationSkeleton />;
