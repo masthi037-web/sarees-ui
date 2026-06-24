@@ -504,8 +504,8 @@ export default function ProductDetailPage() {
     });
 
     const scale = width / lensW;
-    const rx = 320 / width;
-    const ry = 400 / height;
+    const rx = 400 / width;
+    const ry = 500 / height;
     setZoomStyle({
       transform: `scale(${scale}) translate(${-lx * rx}px, ${-ly * ry}px)`,
       transformOrigin: '0 0',
@@ -611,7 +611,7 @@ export default function ProductDetailPage() {
           <div className="order-3 lg:order-3 relative min-h-[520px]">
             {/* Zoom Display Window - Overlays details area when hovered */}
             {isHovered && (
-              <div className="absolute top-0 left-0 w-[320px] h-[400px] bg-white border border-border/40 shadow-2xl z-30 overflow-hidden hidden lg:block">
+              <div className="absolute top-0 left-0 w-[400px] h-[500px] bg-white border border-border/40 shadow-2xl z-30 overflow-hidden hidden lg:block">
                 <img
                   src={productImages[activeImageIdx]}
                   alt={product.name}
