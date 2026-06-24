@@ -33,6 +33,8 @@ const navItems = [
 
 const glassHeader = "fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 rounded-full border border-[#fcd34d]/20 bg-black/45 backdrop-blur-xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.35)] transition-all duration-300";
 
+const EMPTY_PRODUCTS: Product[] = [];
+
 const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyName?: string, fetchAllAtOnce?: boolean }) => {
   const pathname = usePathname();
   const router = useRouter();
@@ -77,7 +79,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
 
   // Extract products belonging to the active category
   const categoryProducts = useMemo(() => {
-    if (!activeCategory) return [];
+    if (!activeCategory) return EMPTY_PRODUCTS;
     return activeCategory.catalogs.flatMap(catalog => catalog.products);
   }, [activeCategory]);
 
@@ -86,11 +88,15 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
       const results = categoryProducts.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setSearchResults(results.slice(0, 5)); // Limit to 5 results
-      setShowDropdown(true);
+      const slicedResults = results.slice(0, 5);
+      setSearchResults(prev => {
+        const isSame = prev.length === slicedResults.length && prev.every((p, idx) => p.id === slicedResults[idx]?.id);
+        return isSame ? prev : slicedResults;
+      });
+      setShowDropdown(prev => prev ? prev : true);
     } else {
-      setSearchResults([]);
-      setShowDropdown(false);
+      setSearchResults(prev => prev.length === 0 ? prev : EMPTY_PRODUCTS);
+      setShowDropdown(prev => !prev ? prev : false);
     }
   }, [searchQuery, categoryProducts]);
 

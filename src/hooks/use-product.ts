@@ -27,9 +27,18 @@ export const useProduct = create<ProductState>()(
             setProducts: (products) => set((state) => ({
                 products: typeof products === 'function' ? products(state.products) : products,
             })),
-            setCategories: (categories) => set((state) => ({
-                categories: typeof categories === 'function' ? categories(state.categories) : categories,
-            })),
+            setCategories: (categories) => set((state) => {
+                const nextCategories = typeof categories === 'function' ? categories(state.categories) : categories;
+                const nextProducts = nextCategories.flatMap(cat => (cat.catalogs || []).flatMap(c => c.products || [])).map(p => ({
+                    ...p,
+                    imageHint: "",
+                    imageUrl: p.productImage || ""
+                }));
+                return {
+                    categories: nextCategories,
+                    products: nextProducts
+                };
+            }),
             setSelectedProduct: (selectedProduct: Product | null) => set({ selectedProduct }),
             syncProductGlobally: (freshProd: Product) => {
                 const { products, categories } = get();

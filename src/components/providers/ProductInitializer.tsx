@@ -16,6 +16,7 @@ export function ProductInitializer({ categories, companyDetails }: ProductInitia
 
     useEffect(() => {
         if (!initialized.current) {
+            initialized.current = true;
             const init = async () => {
                 // 1. Manually Hydrate from LocalStorage (to restore lazily fetched categories)
                 await useProduct.persist.rehydrate();
@@ -93,8 +94,6 @@ export function ProductInitializer({ categories, companyDetails }: ProductInitia
                 // Sync Cart and Wishlist with latest server data
                 const { useWishlist } = await import('@/hooks/use-wishlist');
                 useWishlist.getState().syncWithServer(allProducts);
-
-                initialized.current = true;
             };
 
             init();

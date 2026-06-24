@@ -139,7 +139,6 @@ export default function ProductDetailPage() {
   const [customStitching, setCustomStitching] = useState(false);
 
   const mainImageRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     let isMounted = true;
 
@@ -148,6 +147,9 @@ export default function ProductDetailPage() {
 
       setLoading(true);
       let foundProduct: ProductWithImage | undefined;
+
+      // 1. Manually Hydrate the product store to load cached categories/products
+      await useProduct.persist.rehydrate();
 
       const globalProducts = useProduct.getState().products;
       const selectedProduct = useProduct.getState().selectedProduct;
@@ -180,6 +182,34 @@ export default function ProductDetailPage() {
 
       const activeCompanyId = tenant.companyId || companyDetails?.companyId;
 
+      // Primary fallback: fetch product details directly from backend
+      if (!foundProduct && activeCompanyId) {
+        try {
+          const { fetchProductDetails } = await import('@/services/product.service');
+          const details = await fetchProductDetails(String(id));
+          if (details) {
+            const image = PlaceHolderImages.find(img => img.id === details.imageId)
+              || PlaceHolderImages.find(img => img.id === 'product-1');
+
+            foundProduct = {
+              ...details,
+              id: String(details.id),
+              imageUrl: details.imageUrl || image?.imageUrl || '',
+              imageHint: (details as any).imageHint || image?.imageHint || 'product image',
+            } as ProductWithImage;
+
+            // Sync the fetched product back to the store
+            useProduct.setState(prev => {
+              const exists = prev.products.some(p => String(p.id) === String(foundProduct!.id));
+              return exists ? {} : { products: [...prev.products, foundProduct!] };
+            });
+          }
+        } catch (error) {
+          console.error("Failed to fetch product details directly", error);
+        }
+      }
+
+      // Secondary fallback: fetch categories to search for the product
       if (!foundProduct && activeCompanyId) {
         try {
           const fetchedCategories = await fetchCategories(activeCompanyId, companyDetails?.deliveryBetween);
@@ -198,7 +228,7 @@ export default function ProductDetailPage() {
             };
           }
         } catch (error) {
-          console.error("Failed to fetch product from API", error);
+          console.error("Failed to fetch product from API categories", error);
         }
       }
 
@@ -217,6 +247,17 @@ export default function ProductDetailPage() {
       }
 
       let foundCategoryId: string | undefined = foundProduct?.categoryId;
+      if (!foundCategoryId && foundProduct) {
+        // Search in hydrated categories list using catalogueId
+        const currentCats = useProduct.getState().categories || [];
+        const matchedCat = currentCats.find(c =>
+          c.catalogs.some(ca => String(ca.id) === String(foundProduct!.catalogueId))
+        );
+        if (matchedCat) {
+          foundCategoryId = String(matchedCat.id);
+        }
+      }
+
       if (!foundCategoryId && foundProduct) {
         // search mockCategories
         const mockCat = mockCategories.find(c =>
