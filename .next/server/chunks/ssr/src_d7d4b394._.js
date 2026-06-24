@@ -292,24 +292,52 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$cl
 ;
 const fetchCompanyDetails = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["cache"])(async (companyDomain)=>{
     try {
-        const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$client$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["apiClient"])('/company/public/get', {
-            params: {
-                companyDomain
-            },
-            next: {
-                revalidate: 300,
-                tags: [
-                    'company'
-                ]
-            } // 5 minutes cache
-        });
-        if (!data) {
-            console.warn(`Company details API returned null for domain: ${companyDomain}`);
-            return null;
+        const isLocalhost = "undefined" !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') || ("TURBOPACK compile-time value", "development") === 'development' || !companyDomain || companyDomain.includes('localhost') || companyDomain.includes('127.0.0.1');
+        if ("TURBOPACK compile-time truthy", 1) {
+            console.log("Dev Mode: Returning mock company details for domain:", companyDomain);
+            return {
+                companyId: "mock-company-id",
+                companyName: "Tirumala Sarees",
+                companyDomain: companyDomain || "localhost",
+                companyPhone: "9988776655",
+                companyMessage: "Welcome to Tirumala Sarees",
+                companyEmail: "support@tirumalasarees.com",
+                gstNumber: "GST123456789",
+                logo: "",
+                banner: "",
+                companyCoupon: "WELCOME10&&&10,FESTIVE20&&&20",
+                ownerName: "Owner Name",
+                ownerEmail: "owner@tirumalasarees.com",
+                companyStatus: "ACTIVE",
+                ownerPhone: "9988776655",
+                companyAddress: "123 Saree Lane",
+                companyCity: "Hyderabad",
+                companyState: "Telangana",
+                companyPinCode: "500033",
+                companyFssAi: "",
+                companyProductCategory: "Sarees",
+                deliveryBetween: "3-5 Days",
+                companyEstDate: "2020-01-01",
+                averageRating: 4.8,
+                totalRating: 5,
+                noOfRatings: 100,
+                minimumOrderCost: "0",
+                freeDeliveryCost: "5000",
+                deliveryCost: "100",
+                socialMediaLink: null,
+                about: "Premium silk sarees from Kanchipuram and Banaras.",
+                razorpayKeyId: "rzp_test_mock",
+                razorpayKeySecret: "mock_secret",
+                razorpay: true,
+                smePay: false,
+                cashFree: false,
+                companyRegisteredAt: "2020-01-01",
+                updatedAt: "2020-01-01"
+            };
         }
-        console.log("Company Delivery Between:", data.deliveryBetween);
-        console.log(data.companyCoupon + " coupon");
-        return data;
+        //TURBOPACK unreachable
+        ;
+        const data = undefined;
     } catch (error) {
         console.error('Error fetching company details:', error);
         return null;
@@ -1272,7 +1300,7 @@ const TENANT_MAP = {
     }
 };
 function resolveTenantConfig(domain) {
-    const normalizedDomain = domain === 'localhost' || domain === 'bavahomefoods' || domain === 'babaihomefoods' || domain === 'default' ? 'tirumalasarees' : domain;
+    const normalizedDomain = domain === 'localhost' || domain === 'bavahomefoods' || domain === 'babaihomefoods' || domain === 'default' || domain === 'sareescollections' ? 'tirumalasarees' : domain;
     const specificConfig = TENANT_MAP[normalizedDomain] || {};
     const baseTheme = {
         ...DEFAULT_CONFIG.theme,
@@ -1681,7 +1709,7 @@ const metadata = {
 async function RootLayout({ children }) {
     const headersList = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["headers"])();
     // Use middleware-provided domain or fallback
-    const companyDomain = headersList.get('x-company-domain') || 'babaihomefoods';
+    const companyDomain = headersList.get('x-company-domain') || 'tirumalasarees';
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("html", {
         lang: "en",
         className: "h-full scroll-smooth",

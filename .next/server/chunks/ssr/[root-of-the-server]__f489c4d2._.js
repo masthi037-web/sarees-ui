@@ -418,7 +418,7 @@ async function CategoryPage({ params }) {
     }
     const headersList = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["headers"])();
     const headerDomain = headersList.get("x-company-domain");
-    const companyDomain = headerDomain && headerDomain !== 'localhost' ? headerDomain : 'babaihomefoods';
+    const companyDomain = headerDomain && headerDomain !== 'localhost' ? headerDomain : 'tirumalasarees';
     const company = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$company$2e$service$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["fetchCompanyDetails"])(companyDomain);
     const tenantConfig = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$config$2f$tenant$2d$config$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["resolveTenantConfig"])(companyDomain);
     const categories = company && company.companyId ? await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$product$2e$service$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["fetchCategories"])(company.companyId, company.deliveryBetween, tenantConfig.fetchAllAtOnce ?? true) : [];

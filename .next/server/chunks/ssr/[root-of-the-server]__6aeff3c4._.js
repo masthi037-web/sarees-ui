@@ -275,6 +275,8 @@ async function fetchProductDetails(productId) {
 }
 async function validateCheckout(payload) {
     try {
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
         const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$client$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["apiClient"])('/product/checkout/check', {
             method: 'POST',
             body: JSON.stringify(payload),
@@ -490,7 +492,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$common$
 async function generateMetadata() {
     const headersList = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["headers"])();
     const headerDomain = headersList.get("x-company-domain");
-    const companyDomain = headerDomain && headerDomain !== 'localhost' ? headerDomain : 'babaihomefoods';
+    const companyDomain = headerDomain && headerDomain !== 'localhost' ? headerDomain : 'tirumalasarees';
     const tenantConfig = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$config$2f$tenant$2d$config$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["resolveTenantConfig"])(companyDomain);
     if (!tenantConfig.seo) {
         return {
@@ -519,7 +521,7 @@ async function generateMetadata() {
 async function Home() {
     const headersList = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["headers"])();
     const headerDomain = headersList.get("x-company-domain");
-    const companyDomain = headerDomain && headerDomain !== 'localhost' ? headerDomain : 'babaihomefoods';
+    const companyDomain = headerDomain && headerDomain !== 'localhost' ? headerDomain : 'tirumalasarees';
     const company = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$company$2e$service$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["fetchCompanyDetails"])(companyDomain);
     const tenantConfig = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$config$2f$tenant$2d$config$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["resolveTenantConfig"])(companyDomain);
     const bannerContent = company?.banner ? company.banner.split('&&&') : [];
@@ -538,7 +540,7 @@ async function Home() {
     }
     const categories = company && company.companyId ? await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$product$2e$service$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["fetchCategories"])(company.companyId, company.deliveryBetween, tenantConfig.fetchAllAtOnce ?? true) : [];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "bg-background min-h-screen",
+        className: "bg-transparent min-h-screen",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$home$2f$OfferBannerSlider$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["OfferBannerSlider"], {}, void 0, false, {
                 fileName: "[project]/src/app/page.tsx",

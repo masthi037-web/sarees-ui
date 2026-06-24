@@ -121,8 +121,69 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
     router.push(`/product/${productId}`);
   };
 
+  // Slides generation dynamically based on coupons & free shipping limit
+  const announcementSlides = useMemo(() => {
+    const slides: string[] = [];
+    
+    // Add free delivery slide if threshold exists
+    const threshold = companyDetails?.freeDeliveryCost ? parseFloat(companyDetails.freeDeliveryCost) : 0;
+    if (threshold > 0) {
+      slides.push(`Free Shipping: On all orders above ₹${threshold}*`);
+    }
+    
+    // Add coupon slides
+    if (companyDetails?.companyCoupon) {
+      String(companyDetails.companyCoupon).split(',').forEach(c => {
+        const [code, discountStr] = String(c).split('&&&');
+        const discount = parseFloat(discountStr || '0');
+        if (code && discount > 0) {
+          slides.push(`Special Offer: Get ${discount}% OFF using code ${code}`);
+        }
+      });
+    }
+    
+    // Fallback if empty
+    if (slides.length === 0) {
+      slides.push("Welcome to Tirumala Sarees - Handcrafted Silk Creations");
+    }
+    
+    return slides;
+  }, [companyDetails]);
+
+  const [currentSlideIdx, setCurrentSlideIdx] = useState(0);
+
+  useEffect(() => {
+    if (announcementSlides.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlideIdx(prev => (prev + 1) % announcementSlides.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [announcementSlides]);
+
   return (
     <header className="sticky top-0 left-0 w-full z-50 bg-white border-b border-[#f2f2f2] shadow-sm transition-all duration-300">
+      {/* Top Announcement Bar */}
+      {mounted && announcementSlides.length > 0 && (
+        <div className="bg-[#fdf9f2] border-b border-[#f5eedc] py-2.5 px-4 text-center text-[10px] sm:text-xs tracking-wide transition-all duration-500 ease-in-out select-none">
+          <div className="flex items-center justify-center gap-1.5 animate-in fade-in duration-500">
+            {(() => {
+              const slide = announcementSlides[currentSlideIdx];
+              const colonIndex = slide.indexOf(':');
+              if (colonIndex !== -1) {
+                const label = slide.substring(0, colonIndex + 1);
+                const value = slide.substring(colonIndex + 1);
+                return (
+                  <p className="text-[#c2410c] font-semibold">
+                    <span className="font-bold text-foreground mr-1.5">{label}</span>
+                    <span>{value}</span>
+                  </p>
+                );
+              }
+              return <p className="text-[#c2410c] font-semibold">{slide}</p>;
+            })()}
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-4 md:px-8">
         {/* Top Row */}
         <div className="flex h-16 items-center justify-between gap-4">
@@ -239,8 +300,8 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
         </div>
 
         {/* Bottom Row - Centered Navigation Menu */}
-        <div className="border-t border-[#f2f2f2] h-11 flex items-center justify-center overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-6 md:gap-9 text-[11px] uppercase tracking-[0.2em] font-semibold text-[#1a1a1a] whitespace-nowrap">
+        <div className="border-t border-[#f2f2f2] h-11 flex items-center justify-center overflow-x-auto md:overflow-visible no-scrollbar">
+          <nav className="flex items-center gap-6 md:gap-9 text-[11px] uppercase tracking-[0.2em] font-semibold text-[#1a1a1a] whitespace-nowrap overflow-visible">
             <Link href="/" className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent", pathname === '/' && "text-primary border-primary")}>
               Home
             </Link>
@@ -249,13 +310,50 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
                 const catSlug = slugify(category.name);
                 const isActive = pathname === `/category/${category.id}` || pathname === `/category/${catSlug}`;
                 return (
-                  <Link
-                    key={category.id}
-                    href={`/category/${catSlug}`}
-                    className={cn("hover:text-primary transition-colors py-2.5 border-b-2 border-transparent", isActive && "text-primary border-primary")}
-                  >
-                    {category.name}
-                  </Link>
+                  <div key={category.id} className="relative group/nav py-2.5 overflow-visible">
+                    <Link
+                      href={`/category/${catSlug}`}
+                      className={cn("hover:text-primary transition-colors border-b-2 border-transparent pb-2.5", isActive && "text-primary border-primary")}
+                    >
+                      {category.name}
+                    </Link>
+                    {category.catalogs && category.catalogs.length > 0 && (
+                      <div 
+                        className="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover/nav:flex flex-col bg-white border border-[#f2f2f2] shadow-2xl rounded-2xl py-3 px-4 min-w-[200px] animate-in fade-in slide-in-from-top-2 duration-300 pointer-events-auto"
+                        style={{ zIndex: 60 }}
+                      >
+                        <style>{`
+                          .custom-hover-scrollbar::-webkit-scrollbar {
+                            width: 4px;
+                          }
+                          .custom-hover-scrollbar::-webkit-scrollbar-track {
+                            background: transparent;
+                          }
+                          .custom-hover-scrollbar::-webkit-scrollbar-thumb {
+                            background-color: #e5e5e5;
+                            border-radius: 4px;
+                          }
+                          .custom-hover-scrollbar::-webkit-scrollbar-thumb:hover {
+                            background-color: #c2410c;
+                          }
+                        `}</style>
+                        <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1.5 custom-hover-scrollbar">
+                          {category.catalogs.map(catalog => {
+                            const catalogSlug = slugify(catalog.name);
+                            return (
+                              <Link
+                                key={catalog.id}
+                                href={`/category/${catSlug}?catalogue=${catalogSlug}`}
+                                className="text-left text-[10px] font-bold uppercase tracking-wider text-[#1a1a1a] hover:text-primary hover:translate-x-1 transition-all py-1"
+                              >
+                                {catalog.name}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
               })
             ) : (

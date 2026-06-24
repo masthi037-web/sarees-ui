@@ -39,7 +39,7 @@ function middleware(request) {
         companyDomain = hostHeader.split('.')[1];
     }
     if (companyDomain === 'localhost' || companyDomain.match('mashallah')) {
-        companyDomain = 'bavahomefoods';
+        companyDomain = 'tirumalasarees';
     }
     // Clone the request headers and set the company domain
     const requestHeaders = new Headers(request.headers);

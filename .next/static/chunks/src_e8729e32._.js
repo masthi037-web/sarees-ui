@@ -833,6 +833,10 @@ function resolveImageUrl(path) {
     const firstPath = path.split('&&&')[0];
     if (!firstPath) return '';
     if (firstPath.startsWith('http') || firstPath.startsWith('blob:')) return firstPath;
+    // If it is a local public asset path (like /offer_banner_1.png)
+    if (firstPath.startsWith('/') && !firstPath.startsWith('/uploads') && !firstPath.startsWith('/media')) {
+        return firstPath;
+    }
     // Ensure we don't double slash
     const cleanPath = firstPath.startsWith('/') ? firstPath.slice(1) : firstPath;
     return "https://api.manabuy.in/".concat(cleanPath);
@@ -1311,6 +1315,34 @@ async function fetchProductDetails(productId) {
 }
 async function validateCheckout(payload) {
     try {
+        if ("object" !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+            console.log('Localhost detected: Mocking checkout validation response.');
+            return payload.items.map((item)=>({
+                    multipleSetDiscount: null,
+                    multipleDiscountMoreThan: null,
+                    productOffer: null,
+                    productStatus: 'ACTIVE',
+                    productPrice: 0,
+                    productPriceAfterDiscount: 0,
+                    colourStatus: 'ACTIVE',
+                    colour: null,
+                    colourQuantityAvailable: 999,
+                    sizeStatus: 'ACTIVE',
+                    productSizePrice: null,
+                    productSizePriceAfterDiscount: 0,
+                    productSize: null,
+                    productQuantityAvailable: 999,
+                    sizeQuantity: 999,
+                    sizeColourName: null,
+                    colourExtraPrice: 0,
+                    productSizeColourQuantity: 999,
+                    sizeColourStatus: 'ACTIVE',
+                    productId: item.productId,
+                    sizeId: item.sizeId,
+                    productColourId: item.productColourId,
+                    productSizeColourId: item.productSizeColourId
+                }));
+        }
         const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$client$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["apiClient"])('/product/checkout/check', {
             method: 'POST',
             body: JSON.stringify(payload),
@@ -1347,6 +1379,46 @@ const customerService = {
             customerId = localStorage.getItem('customerId') || '';
         }
         if (!customerId) return null;
+        // Localhost bypass check
+        if ("object" !== 'undefined' && window.location.hostname === 'localhost') {
+            console.log("Dev Mode: Returning mock customer details & address");
+            const cachedDetails = localStorage.getItem('mock_customer_details');
+            if (cachedDetails) {
+                try {
+                    return JSON.parse(cachedDetails);
+                } catch (e) {}
+            }
+            const mockData = {
+                customerId: "mock-customer-id",
+                customerName: "Tejesh Neelam",
+                customerMobileNumber: "9988776655",
+                customerEmailId: "tejesh@example.com",
+                customerAddress: [
+                    {
+                        customerAddressId: 1,
+                        addressName: "Home",
+                        customerDrNum: "Flat 402",
+                        customerRoad: "Premium Residency, Jubilee Hills",
+                        customerCity: "Hyderabad",
+                        customerState: "Telangana",
+                        customerPin: "500033",
+                        customerCountry: "India"
+                    },
+                    {
+                        customerAddressId: 2,
+                        addressName: "Office",
+                        customerDrNum: "Level 8",
+                        customerRoad: "Tech Hub, Indiranagar",
+                        customerCity: "Bengaluru",
+                        customerState: "Karnataka",
+                        customerPin: "560038",
+                        customerCountry: "India"
+                    }
+                ]
+            };
+            localStorage.setItem('mock_customer_details', JSON.stringify(mockData));
+            return mockData;
+        }
         if (!forceRefresh) {
             try {
                 const cached = localStorage.getItem(CACHE_KEY);
@@ -1415,6 +1487,38 @@ const customerService = {
         return response;
     },
     async createAddress (data) {
+        if ("object" !== 'undefined' && window.location.hostname === 'localhost') {
+            console.log("Dev Mode: Simulating create address locally");
+            const cachedDetails = localStorage.getItem('mock_customer_details');
+            let mockData = {
+                customerId: "mock-customer-id",
+                customerName: "Tejesh Neelam",
+                customerMobileNumber: "9988776655",
+                customerEmailId: "tejesh@example.com",
+                customerAddress: []
+            };
+            if (cachedDetails) {
+                try {
+                    mockData = JSON.parse(cachedDetails);
+                } catch (e) {}
+            }
+            const newAddr = {
+                customerAddressId: Date.now(),
+                addressName: data.addressName || 'Home',
+                customerDrNum: data.customerDrNum || '',
+                customerRoad: data.customerRoad || '',
+                customerCity: data.customerCity || '',
+                customerState: data.customerState || '',
+                customerPin: data.customerPin || '',
+                customerCountry: data.customerCountry || 'India'
+            };
+            mockData.customerAddress = [
+                ...mockData.customerAddress || [],
+                newAddr
+            ];
+            localStorage.setItem('mock_customer_details', JSON.stringify(mockData));
+            return newAddr;
+        }
         return (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$client$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["apiClient"])('/customer/address/create', {
             method: 'POST',
             body: JSON.stringify(data)
@@ -1641,30 +1745,59 @@ __turbopack_context__.s([
     "fetchCompanyDetails",
     ()=>fetchCompanyDetails
 ]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$client$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/services/api-client.ts [app-client] (ecmascript)");
 ;
 ;
 const fetchCompanyDetails = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cache"])(async (companyDomain)=>{
     try {
-        const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$client$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["apiClient"])('/company/public/get', {
-            params: {
-                companyDomain
-            },
-            next: {
-                revalidate: 300,
-                tags: [
-                    'company'
-                ]
-            } // 5 minutes cache
-        });
-        if (!data) {
-            console.warn("Company details API returned null for domain: ".concat(companyDomain));
-            return null;
+        const isLocalhost = "object" !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') || ("TURBOPACK compile-time value", "development") === 'development' || !companyDomain || companyDomain.includes('localhost') || companyDomain.includes('127.0.0.1');
+        if ("TURBOPACK compile-time truthy", 1) {
+            console.log("Dev Mode: Returning mock company details for domain:", companyDomain);
+            return {
+                companyId: "mock-company-id",
+                companyName: "Tirumala Sarees",
+                companyDomain: companyDomain || "localhost",
+                companyPhone: "9988776655",
+                companyMessage: "Welcome to Tirumala Sarees",
+                companyEmail: "support@tirumalasarees.com",
+                gstNumber: "GST123456789",
+                logo: "",
+                banner: "",
+                companyCoupon: "WELCOME10&&&10,FESTIVE20&&&20",
+                ownerName: "Owner Name",
+                ownerEmail: "owner@tirumalasarees.com",
+                companyStatus: "ACTIVE",
+                ownerPhone: "9988776655",
+                companyAddress: "123 Saree Lane",
+                companyCity: "Hyderabad",
+                companyState: "Telangana",
+                companyPinCode: "500033",
+                companyFssAi: "",
+                companyProductCategory: "Sarees",
+                deliveryBetween: "3-5 Days",
+                companyEstDate: "2020-01-01",
+                averageRating: 4.8,
+                totalRating: 5,
+                noOfRatings: 100,
+                minimumOrderCost: "0",
+                freeDeliveryCost: "5000",
+                deliveryCost: "100",
+                socialMediaLink: null,
+                about: "Premium silk sarees from Kanchipuram and Banaras.",
+                razorpayKeyId: "rzp_test_mock",
+                razorpayKeySecret: "mock_secret",
+                razorpay: true,
+                smePay: false,
+                cashFree: false,
+                companyRegisteredAt: "2020-01-01",
+                updatedAt: "2020-01-01"
+            };
         }
-        console.log("Company Delivery Between:", data.deliveryBetween);
-        console.log(data.companyCoupon + " coupon");
-        return data;
+        //TURBOPACK unreachable
+        ;
+        const data = undefined;
     } catch (error) {
         console.error('Error fetching company details:', error);
         return null;
@@ -2635,7 +2768,7 @@ const TENANT_MAP = {
 };
 function resolveTenantConfig(domain) {
     var _specificConfig_theme, _specificConfig_theme1, _DEFAULT_CONFIG_typography, _specificConfig_typography, _DEFAULT_CONFIG_typography1, _specificConfig_typography1, _DEFAULT_CONFIG_typography2, _specificConfig_typography2, _DEFAULT_CONFIG_typography3, _specificConfig_typography3;
-    const normalizedDomain = domain === 'localhost' || domain === 'bavahomefoods' || domain === 'babaihomefoods' || domain === 'default' ? 'tirumalasarees' : domain;
+    const normalizedDomain = domain === 'localhost' || domain === 'bavahomefoods' || domain === 'babaihomefoods' || domain === 'default' || domain === 'sareescollections' ? 'tirumalasarees' : domain;
     const specificConfig = TENANT_MAP[normalizedDomain] || {};
     const baseTheme = {
         ...DEFAULT_CONFIG.theme,
