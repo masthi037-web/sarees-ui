@@ -1151,11 +1151,281 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
 
 
     const handlePaymentInitialize = async () => {
-        if (!selectedAddressId || !customer) {
+        if ((!isPickup && !selectedAddressId) || !customer || !companyDetails) {
             toast({ variant: "destructive", description: "Please select an address first." });
             return;
         }
-        setShowQrPopup(true);
+
+        // Localhost payment simulation bypass (only if mock keys or no keys are configured)
+        const isLocalhost = typeof window !== 'undefined' && 
+            (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+        if (isLocalhost && (!companyDetails?.razorpayKeyId || companyDetails.razorpayKeyId === 'rzp_test_mock')) {
+            setIsInitializingPayment(true);
+            console.log("Dev Mode: Simulating mock payment flow...");
+            try {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                toast({
+                    title: "Payment Successful ✅ (Dev Mode)",
+                    description: `Order Confirmed! Order ID: MOCK-ORDER-${Date.now()}`,
+                    className: "bg-green-50 border-green-200 text-green-800 animate-in fade-in duration-300"
+                });
+
+                // Clear cart and move to success view
+                clearCart();
+                setView('success');
+
+                // Reset other states
+                setContactInfo({ name: '', email: '', mobile: '' });
+                setSelectedAddressId(null);
+                setManualProof(null);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsInitializingPayment(false);
+            }
+            return;
+        }
+
+        const loaded = await loadRazorpay();
+        if (!loaded) {
+            toast({ variant: "destructive", description: "Payment gateway not loaded. Please ensure you are online." });
+            return;
+        }
+
+        setIsInitializingPayment(true);
+        try {
+            // Calculate Raw Subtotal and Total Bulk Discount
+            let totalBulkDiscount = 0;
+            let rawSubtotal = 0;
+
+            const processedItems = cart.map((item): SaveOrderItem => {
+                let sizeId: number | null = null;
+                let sizeName: string = "";
+                let sizePriceAfterDiscount: number = item.priceAfterDiscount || item.price;
+
+                let productSizePrice: number | null = null;
+                if (item.pricing && item.pricing.length > 0) {
+                    const quantityVariant = item.selectedVariants?.['Quantity'];
+                    if (quantityVariant) {
+                        sizeName = quantityVariant;
+                        const matchedPricing = item.pricing.find(p => p.quantity === quantityVariant);
+                        if (matchedPricing) {
+                            sizeId = parseInt(matchedPricing.id);
+                            productSizePrice = matchedPricing.price;
+                        }
+                    }
+                    if (!sizeId && item.pricing.length > 0) {
+                        sizeId = parseInt(item.pricing[0].id);
+                        sizeName = item.pricing[0].quantity;
+                        productSizePrice = item.pricing[0].price;
+                    }
+                }
+
+                const sizeColoursCost = (item.selectedSizeColours || []).reduce((acc, a) => acc + a.price, 0);
+                const baseUnitPrice = (item.priceAfterDiscount && item.priceAfterDiscount > 0) ? item.priceAfterDiscount : item.price;
+                const finalUnitPrice = baseUnitPrice + sizeColoursCost;
+
+                rawSubtotal += finalUnitPrice * item.quantity;
+
+                let itemBulkDiscount = 0;
+                const discounts = itemDiscountMap[item.cartItemId] || [];
+                for (let q = 0; q < item.quantity; q++) {
+                    const discountPercent = discounts[q] || 0;
+                    itemBulkDiscount += finalUnitPrice * (discountPercent / 100);
+                }
+                totalBulkDiscount += itemBulkDiscount;
+
+                const baseItem: SaveOrderItem = {
+                    productId: parseInt(item.id),
+                    productName: item.name,
+                    productImage: (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl,
+                    productPrice: item.price,
+                    productPriceAfterDiscount: item.priceAfterDiscount || item.price,
+                    quantity: item.quantity,
+                    totalCost: (finalUnitPrice * item.quantity) - itemBulkDiscount,
+                    extraDiscount: itemBulkDiscount
+                };
+
+                const productSizeColourId = (item.selectedSizeColours && item.selectedSizeColours.length > 0) ? parseInt(item.selectedSizeColours[0].id) : null;
+                const productColourId = item.selectedColour ? parseInt(item.selectedColour.id) : null;
+
+                if (productSizeColourId) {
+                    const sc = item.selectedSizeColours![0];
+                    baseItem.productSizeColourId = productSizeColourId;
+                    baseItem.productSizeColourName = sc.name;
+                    baseItem.productSizeColourImage = sc.productPics;
+                    baseItem.productSizeColourExtraPrice = sc.price;
+                    baseItem.productSizeId = sizeId;
+                    baseItem.productSizeName = sizeName;
+                    baseItem.productSizePrice = productSizePrice;
+                    baseItem.productSizePriceAfterDiscount = sizePriceAfterDiscount;
+                    baseItem.productImage = undefined;
+                    baseItem.productPriceAfterDiscount = undefined;
+                    if (sc.productPics) baseItem.productSizeColourImage = sc.productPics;
+                }
+                else if (sizeId) {
+                    baseItem.productSizeId = sizeId;
+                    baseItem.productSizeName = sizeName;
+                    baseItem.productSizePrice = productSizePrice;
+                    baseItem.productSizePriceAfterDiscount = sizePriceAfterDiscount;
+                }
+                else if (productColourId) {
+                    baseItem.productColourId = productColourId;
+                    baseItem.productColour = item.selectedColour!.name;
+                    baseItem.productColourImage = item.selectedColour!.image;
+                    if (item.selectedColour!.image) baseItem.productImage = item.selectedColour!.image;
+                }
+
+                return baseItem;
+            });
+
+            const freeDeliveryThreshold = parseFloat(companyDetails?.freeDeliveryCost || '0');
+            const currentSubtotalWithBulk = rawSubtotal - totalBulkDiscount;
+            const isFreeDelivery = freeDeliveryThreshold > 0 && currentSubtotalWithBulk >= freeDeliveryThreshold;
+            const shipping = isFreeDelivery ? 0 : parseFloat(companyDetails?.deliveryCost || '0');
+
+            let couponDiscountAmount = 0;
+            if (couponCode && companyDetails?.companyCoupon && typeof companyDetails.companyCoupon === 'string') {
+                const couponData = String(companyDetails.companyCoupon).split(',').find(c => c.startsWith(couponCode + '&&&'));
+                if (couponData) {
+                    const [, discountStr, minOrderStr] = String(couponData).split('&&&');
+                    const discountPercent = parseFloat(discountStr || '0');
+                    const minCouponOrder = parseFloat(minOrderStr || '0');
+                    if (currentSubtotalWithBulk >= minCouponOrder) {
+                        couponDiscountAmount = (currentSubtotalWithBulk * discountPercent) / 100;
+                    }
+                }
+            }
+
+            const finalTotalAmount = rawSubtotal - totalBulkDiscount - couponDiscountAmount + shipping;
+            const selectedAddress = addresses.find(a => a.customerAddressId === selectedAddressId);
+            if (!selectedAddress && !isPickup) throw new Error("Address not found");
+
+            const initData = {
+                customerName: contactInfo.name || customer.customerName,
+                customerPhoneNumber: contactInfo.mobile || customer.customerMobileNumber,
+                customerEmailId: contactInfo.email || customer.customerEmailId,
+                domainName: companyDetails.companyDomain || window.location.hostname,
+                customerAddress: isPickup ? "Store Pickup" : `${selectedAddress?.customerDrNum || ''}, ${selectedAddress?.customerRoad || ''}`,
+                customerCity: isPickup ? companyDetails.companyCity || "City" : selectedAddress?.customerCity || "",
+                customerState: isPickup ? companyDetails.companyState || "State" : selectedAddress?.customerState || "",
+                customerCountry: isPickup ? "India" : selectedAddress?.customerCountry || "India",
+                addressName: isPickup ? "Pickup" : selectedAddress?.addressName || "",
+                shipmentAmount: shipping,
+                discount: (couponCode && couponDiscountAmount > 0) ? `applied ${couponCode} changed ${currentSubtotalWithBulk} to ${currentSubtotalWithBulk - couponDiscountAmount}` : "0",
+                discountName: couponCode || "",
+                discountAmount: couponDiscountAmount,
+                totalCost: finalTotalAmount,
+                paymentMethod: "RAZORPAY",
+                customerNote: "",
+                items: processedItems.map(pi => ({
+                    productId: pi.productId,
+                    pricingId: pi.productSizeId ?? null,
+                    productSizeColourId: pi.productSizeColourId ?? null,
+                    quantity: pi.quantity
+                }))
+            };
+
+            const initResponse = await orderService.initializePayment(
+                initData,
+                companyDetails.razorpayKeyId,
+                companyDetails.razorpayKeySecret
+            );
+
+            if (!initResponse || !initResponse.razorpayOrderId) {
+                throw new Error("Failed to initialize payment.");
+            }
+
+            // Force pointer-events so Razorpay iframe is interactable on mobile inside radix sheet
+            const originalPointerEvents = document.body.style.pointerEvents;
+            document.body.style.setProperty('pointer-events', 'auto', 'important');
+            
+            const restorePointerEvents = () => {
+                setTimeout(() => {
+                    document.body.style.pointerEvents = originalPointerEvents || '';
+                }, 300);
+            };
+
+            // Open Razorpay options
+            const options = {
+                key: initResponse.razorpayKeyId,
+                amount: initResponse.amountInPaise,
+                currency: initResponse.currency,
+                name: companyDetails.companyName,
+                description: "Order Payment",
+                order_id: initResponse.razorpayOrderId,
+                handler: async function (response: any) {
+                    restorePointerEvents();
+                    try {
+                        const verifyRes = await orderService.verifyPayment({
+                            razorpayOrderId: response.razorpay_order_id,
+                            razorpayPaymentId: response.razorpay_payment_id,
+                            razorpaySignature: response.razorpay_signature
+                        });
+
+                        if (verifyRes.status === 'success') {
+                            toast({
+                                title: "Payment Successful ✅",
+                                description: `Order Confirmed! Order ID: ${verifyRes.orderId || 'N/A'}`,
+                                className: "bg-green-50 border-green-200 text-green-800"
+                            });
+
+                            // Clear cart and move to success view
+                            clearCart();
+                            setView('success');
+
+                            // Reset other states
+                            setContactInfo({ name: '', email: '', mobile: '' });
+                            setSelectedAddressId(null);
+                            setManualProof(null);
+                        } else {
+                            toast({
+                                variant: "destructive",
+                                title: "Verification Failed ❌",
+                                description: verifyRes.message || "Payment verification failed."
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Verification Error", err);
+                        toast({
+                            variant: "destructive",
+                            title: "Error ❌",
+                            description: "Failed to verify payment."
+                        });
+                    }
+                },
+                modal: {
+                    ondismiss: function() {
+                        restorePointerEvents();
+                    }
+                },
+                prefill: {
+                    name: contactInfo.name || customer.customerName,
+                    email: contactInfo.email || customer.customerEmailId,
+                    contact: contactInfo.mobile || customer.customerMobileNumber
+                },
+                theme: {
+                    color: theme?.colors?.primary ? `hsl(${theme.colors.primary})` : "#3399cc"
+                }
+            };
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.on('payment.failed', function (response: any) {
+                restorePointerEvents();
+                console.error("Razorpay Payment Error", response.error);
+                toast({ variant: "destructive", title: "Payment Error", description: response.error.description || "Payment failed" });
+                setView('failed');
+            });
+            rzp.open();
+
+        } catch (error) {
+            console.error("Payment Error", error);
+            toast({ variant: "destructive", description: "Payment initialization failed." });
+        } finally {
+            setIsInitializingPayment(false);
+        }
     };
     useEffect(() => {
         if (!companyDetails?.companyCoupon) return;
@@ -2865,19 +3135,30 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                 {/* Header */}
                 <SheetHeader className="px-6 py-5 border-b border-border/40 bg-background/50 backdrop-blur-md sticky top-0 z-20">
                     {view === 'cart' ? (
-                        <SheetTitle className="flex items-center gap-2.5 text-xl font-bold tracking-tight">
-                            <div className="relative group/icon">
-                                <ShoppingCart className="w-5 h-5 text-primary group-hover/icon:scale-110 transition-transform duration-300" />
-                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
-                                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500" />
-                            </div>
-                            My Cart
+                        <div className="flex items-center gap-3">
+                            <SheetClose asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="-ml-2 h-8 w-8 rounded-full"
+                                >
+                                    <ArrowRight className="w-4 h-4 rotate-180" />
+                                </Button>
+                            </SheetClose>
+                            <SheetTitle className="flex items-center gap-2.5 text-xl font-bold tracking-tight">
+                                <div className="relative group/icon">
+                                    <ShoppingCart className="w-5 h-5 text-primary group-hover/icon:scale-110 transition-transform duration-300" />
+                                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+                                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500" />
+                                </div>
+                                My Cart
+                            </SheetTitle>
                             {cartItemCount > 0 && (
-                                <span className="ml-auto mr-12 text-xs font-bold px-2.5 py-1 rounded-full bg-secondary text-primary">
+                                <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-secondary text-primary">
                                     {cartItemCount} items
                                 </span>
                             )}
-                        </SheetTitle>
+                        </div>
                     ) : view === 'success' ? (
                         <SheetTitle className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-primary">
                             Order Confirmed

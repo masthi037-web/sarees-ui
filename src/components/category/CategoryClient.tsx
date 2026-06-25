@@ -457,7 +457,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                 <p className="text-xs text-[#555] font-light mt-4">Discover our handpicked weaves, tailored designs, and premium styles curated for you.</p>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                            <div className="grid grid-cols-2 gap-3 sm:gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                                 {catalogs.map((catalog) => {
                                     const firstProd = catalog.products[0];
                                     const displayImage = catalog.catalogueImage 
@@ -652,7 +652,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
 
                                 {/* Product Grid */}
                                 {filteredProducts.length > 0 ? (
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-4 sm:gap-x-4 sm:gap-y-8">
                                         {filteredProducts.map((product) => (
                                             <div key={product.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                                 <ProductCard product={product} hideDescription={true} />
@@ -781,7 +781,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
                                             return offerProducts.map((product, index) => (
                                                 <div
                                                     key={product.id}
-                                                    className="w-[280px] md:w-[320px] flex-shrink-0 snap-center h-full flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both"
+                                                    className="w-[160px] xs:w-[200px] md:w-[320px] flex-shrink-0 snap-center h-full flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both"
                                                     style={{ animationDelay: `${index * 100}ms` }}
                                                 >
                                                     <ProductCard product={product} hideDescription={true} />
@@ -813,7 +813,7 @@ export default function CategoryClient({ slug, initialCategories, companyDetails
 
                                     <div className="flex overflow-x-auto items-stretch gap-4 pb-8 -mx-4 px-4 scroll-smooth no-scrollbar snap-x snap-mandatory">
                                         {famousProducts.map((product) => (
-                                            <div key={product.id} className="w-[280px] md:w-[320px] flex-shrink-0 snap-center h-full flex flex-col">
+                                            <div key={product.id} className="w-[160px] xs:w-[200px] md:w-[320px] flex-shrink-0 snap-center h-full flex flex-col">
                                                 <ProductCard product={product} hideDescription={true} />
                                             </div>
                                         ))}

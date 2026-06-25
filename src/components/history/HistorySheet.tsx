@@ -19,14 +19,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSheetBackHandler } from '@/hooks/use-sheet-back-handler';
 import { orderService } from '@/services/order.service';
 import { SaveOrderResponse, OrderResponseItem } from '@/lib/api-types';
-
 import { OrderDetails } from './OrderDetails';
+import { useTenant } from '@/components/providers/TenantContext';
 
 export function HistorySheet({ children }: { children: React.ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
     const [orders, setOrders] = useState<SaveOrderResponse[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<SaveOrderResponse | null>(null);
+    const tenant = useTenant();
 
     // Handle back button on mobile
     useSheetBackHandler(isOpen, setIsOpen);
@@ -38,7 +39,13 @@ export function HistorySheet({ children }: { children: React.ReactNode }) {
         setLoading(true);
         try {
             const data = await orderService.getCustomerOrders(customerId);
-            const sorted = (data || []).sort((a, b) => {
+            let filteredOrders = data || [];
+
+            if (tenant.id.toLowerCase().includes('anantha')) {
+                filteredOrders = filteredOrders.filter((order: any) => order.orderStatus !== 'CREATED');
+            }
+
+            const sorted = filteredOrders.sort((a, b) => {
                 const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
                 const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
                 return timeB - timeA;
@@ -49,7 +56,7 @@ export function HistorySheet({ children }: { children: React.ReactNode }) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [tenant.id]);
 
     // Fetch orders when sheet opens
     useEffect(() => {
@@ -139,23 +146,23 @@ export function HistorySheet({ children }: { children: React.ReactNode }) {
                                             onClick={() => setSelectedOrder(order)}
                                         >
                                             {/* Order Header */}
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div className="space-y-1.5">
-                                                    <div className="flex items-center gap-2">
-                                                        <Badge className={`rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-0 shadow-sm ${getStatusColor(order.orderStatus)}`}>
+                                            <div className="flex justify-between items-start mb-6 gap-2">
+                                                <div className="space-y-1.5 flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 min-w-0">
+                                                        <Badge className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-0 shadow-sm ${getStatusColor(order.orderStatus)}`}>
                                                             {order.orderStatus}
                                                         </Badge>
-                                                        <span className="text-[11px] font-mono text-slate-400">
+                                                        <span className="text-[11px] font-mono text-slate-400 truncate">
                                                             #{order.orderNumber?.split('-').pop() || order.orderId}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs font-medium text-slate-500 pl-1">
+                                                    <p className="text-xs font-medium text-slate-500 pl-1 truncate">
                                                         {formatDate(order.createdAt)}
                                                     </p>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-2xl font-black text-slate-900 font-headline tracking-tight leading-none">
-                                                        {formatCurrency(order.finalTotalAmount)}
+                                                <div className="text-right shrink-0">
+                                                    <p className="text-xl sm:text-2xl font-black text-slate-900 font-headline tracking-tight leading-none block">
+                                                        {order.finalTotalAmount !== undefined ? formatCurrency(order.finalTotalAmount) : 'Pending'}
                                                     </p>
                                                     <p className="text-[10px] text-slate-400 mt-1.5 font-bold tracking-wide uppercase">
                                                         {order.items?.length || 0} items
@@ -199,7 +206,7 @@ export function HistorySheet({ children }: { children: React.ReactNode }) {
                                                                     </p>
                                                                 )}
                                                             </div>
-                                                            <div className="text-right pl-2 flex flex-col items-end">
+                                                            <div className="text-right pl-2 shrink-0 flex flex-col items-end">
                                                                 <span className="text-sm font-black text-slate-900 opacity-60">x{item.quantity}</span>
                                                                 {item.productSizeColourExtraPrice && item.productSizeColourExtraPrice > 0 && (
                                                                     <span className="text-[10px] font-bold text-primary mt-0.5 whitespace-nowrap">

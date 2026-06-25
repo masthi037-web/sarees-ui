@@ -16,6 +16,7 @@ import {
     Heart,
     Trash2,
     ShoppingCart,
+    ArrowRight,
 } from 'lucide-react';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { useCart } from '@/hooks/use-cart';
@@ -36,17 +37,28 @@ export function WishlistSheet({ children }: { children?: React.ReactNode }) {
             <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 gap-0 border-l border-border/40 bg-background shadow-2xl">
                 {/* Header */}
                 <SheetHeader className="px-6 py-5 border-b border-border/40 bg-background sticky top-0 z-20">
-                    <SheetTitle className="flex items-center gap-2.5 text-xl font-bold tracking-tight">
-                        <div className="relative">
-                            <Heart className="w-5 h-5 text-primary fill-primary" />
-                        </div>
-                        My Wishlist
+                    <div className="flex items-center gap-3">
+                        <SheetClose asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="-ml-2 h-8 w-8 rounded-full"
+                            >
+                                <ArrowRight className="w-4 h-4 rotate-180" />
+                            </Button>
+                        </SheetClose>
+                        <SheetTitle className="flex items-center gap-2.5 text-xl font-bold tracking-tight">
+                            <div className="relative">
+                                <Heart className="w-5 h-5 text-primary fill-primary" />
+                            </div>
+                            My Wishlist
+                        </SheetTitle>
                         {wishlist.length > 0 && (
-                            <span className="ml-auto mr-12 text-xs font-bold px-2.5 py-1 rounded-full bg-secondary text-primary">
+                            <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-secondary text-primary">
                                 {wishlist.length} items
                             </span>
                         )}
-                    </SheetTitle>
+                    </div>
                 </SheetHeader>
 
                 {wishlist.length === 0 ? (

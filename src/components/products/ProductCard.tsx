@@ -173,12 +173,12 @@ export const ProductCard = ({ product, hideDescription = false }: ProductCardPro
           </div>
 
           {/* Content Area */}
-          <div className="pt-3.5 pb-3.5 px-3 flex flex-col gap-1.5 items-center text-center bg-white border border-t-0 border-[#f2f2f2] flex-1">
-            <h3 className="font-bold text-[11px] md:text-xs text-[#1a1a1a] uppercase tracking-wider leading-[1.3] line-clamp-2" title={product.name}>
+          <div className="pt-2 pb-2 px-2.5 sm:pt-3.5 sm:pb-3.5 sm:px-3 flex flex-col gap-1 sm:gap-1.5 items-center text-center bg-white border border-t-0 border-[#f2f2f2] flex-1">
+            <h3 className="font-bold text-[10px] sm:text-[11px] md:text-xs text-[#1a1a1a] uppercase tracking-wider leading-[1.3] line-clamp-2" title={product.name}>
               {product.name}
             </h3>
 
-            <div className="flex flex-col items-center mt-auto pt-1 w-full gap-2">
+            <div className="flex flex-col items-center mt-auto pt-0.5 w-full gap-1.5">
               {(() => {
                 let displayPrice = 0;
                 let originalPriceForDisplay = 0;
@@ -215,13 +215,13 @@ export const ProductCard = ({ product, hideDescription = false }: ProductCardPro
                 return (
                   <div className="flex flex-col gap-[2px] items-center">
                     {hasDiscount ? (
-                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                        <span className="text-[11px] text-[#888] line-through">₹{originalPriceForDisplay.toLocaleString('en-IN')}</span>
-                        <span className="text-xs md:text-sm font-bold text-primary">₹{displayPrice.toLocaleString('en-IN')}</span>
-                        <span className="text-[10px] font-bold text-[#e53b49] uppercase">({offerPercent}% OFF)</span>
+                      <div className="flex items-center justify-center gap-1 flex-wrap">
+                        <span className="text-[9px] sm:text-[11px] text-[#888] line-through">₹{originalPriceForDisplay.toLocaleString('en-IN')}</span>
+                        <span className="text-[10px] sm:text-xs md:text-sm font-bold text-primary">₹{displayPrice.toLocaleString('en-IN')}</span>
+                        <span className="text-[8px] sm:text-[10px] font-bold text-[#e53b49] uppercase whitespace-nowrap">({offerPercent}% OFF)</span>
                       </div>
                     ) : (
-                      <span className="text-xs md:text-sm font-bold text-[#1a1a1a]">₹{displayPrice.toLocaleString('en-IN')}</span>
+                      <span className="text-[10px] sm:text-xs md:text-sm font-bold text-[#1a1a1a]">₹{displayPrice.toLocaleString('en-IN')}</span>
                     )}
                   </div>
                 );
@@ -230,7 +230,7 @@ export const ProductCard = ({ product, hideDescription = false }: ProductCardPro
               {!isDisabled && (
                 <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="w-full shrink-0">
                   <AddToCartSheet product={product}>
-                    <Button className="w-full h-8 rounded-none bg-primary hover:bg-primary/95 text-[10px] font-bold uppercase tracking-widest text-white transition-colors">
+                    <Button className="w-full h-7 sm:h-8 rounded-none bg-primary hover:bg-primary/95 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-white transition-colors">
                       Add to Bag
                     </Button>
                   </AddToCartSheet>

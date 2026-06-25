@@ -77,7 +77,7 @@ export const orderService = {
         // 2. Fetch Fresh Data (still keeping the revalidate tag for server-side correctness just in case)
         const data = await apiClient<SaveOrderResponse[]>('/order/customer/get', {
             params: { customerId },
-            next: { revalidate: 10800, tags: ['orders'] }
+            next: { revalidate: 60, tags: ['orders'] }
         });
 
         // 3. Save to Cache

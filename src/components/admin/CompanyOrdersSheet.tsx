@@ -68,7 +68,12 @@ export const CompanyOrdersSheet = ({ children }: { children: React.ReactNode }) 
             } else {
                 data = await orderService.getCompanyOrdersByRange(companyDetails.companyId, fromDate, toDate);
             }
-            const sortedData = (data || []).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            let filteredOrders = data || [];
+            if (companyDetails.companyId === 'ananthajewellers' || companyDetails.companyId.toLowerCase().includes('anantha')) {
+                filteredOrders = filteredOrders.filter((order: any) => order.orderStatus !== 'CREATED');
+            }
+
+            const sortedData = filteredOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setOrders(sortedData);
         } catch (error) {
             console.error("Failed to fetch orders", error);

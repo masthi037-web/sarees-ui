@@ -145,8 +145,11 @@ export function CheckoutSheet({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        // Localhost payment simulation bypass
-        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        // Localhost payment simulation bypass (only if mock keys or no keys are configured)
+        const isLocalhost = typeof window !== 'undefined' && 
+            (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+        if (isLocalhost && (!companyDetails?.razorpayKeyId || companyDetails.razorpayKeyId === 'rzp_test_mock')) {
             setProcessingPayment(true);
             console.log("Dev Mode: Simulating mock payment flow...");
             try {

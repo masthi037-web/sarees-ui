@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Heart, User, ShoppingCart, Search, ShoppingBag, History, Home, Settings, ClipboardList } from 'lucide-react';
+import { Heart, User, ShoppingCart, Search, ShoppingBag, History, Home, Settings, ClipboardList, X } from 'lucide-react';
 import { cn, slugify } from '@/lib/utils';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { useCart } from '@/hooks/use-cart';
@@ -44,6 +44,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const { products: allProducts, categories } = useProduct();
   const { text } = useTenant();
@@ -124,6 +125,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
   const handleProductClick = (productId: string) => {
     setShowDropdown(false);
     setSearchQuery('');
+    setShowMobileSearch(false);
     router.push(`/product/${productId}`);
   };
 
@@ -198,7 +200,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
         {/* Top Row */}
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Top Left - Account info */}
-          <div className="w-1/4 flex items-center justify-start">
+          <div className="w-auto flex items-center justify-start shrink-0">
             <ProfileSheet>
               <button className="text-[11px] md:text-xs uppercase tracking-widest text-[#1a1a1a] hover:text-primary transition-colors font-semibold flex items-center gap-1.5 whitespace-nowrap">
                 <User className="h-4.5 w-4.5 stroke-[1.5]" />
@@ -208,7 +210,7 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
           </div>
 
           {/* Top Center - Logo & Name */}
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center min-w-0 mx-2">
             <Link href="/" className="flex items-center gap-2 group max-w-full">
               {companyDetails?.logo ? (
                 <div className="relative h-9 w-9 rounded-full overflow-hidden border border-black/5 bg-white shrink-0">
@@ -231,14 +233,14 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
           </div>
 
           {/* Top Right - Search, Wishlist, Cart */}
-          <div className="w-1/3 flex items-center justify-end gap-3 md:gap-5">
-            {/* Search Pill */}
+          <div className="w-auto flex items-center justify-end shrink-0 gap-2.5 sm:gap-4">
+            {/* Search Pill for Desktop */}
             {!(pathname === '/' && !fetchAllAtOnce) && !pathname.startsWith('/product/') && (
-              <div className="relative w-full max-w-[120px] xs:max-w-[180px] sm:max-w-[220px]" ref={searchRef}>
+              <div className="relative hidden md:block max-w-[220px]" ref={searchRef}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#888]" />
                 <Input
                   placeholder={activeCategory ? `Search in ${activeCategory.name}...` : (text.searchPlaceholder || "Search here...")}
-                  className="h-8 pl-8 pr-4 rounded-full bg-[#f2f2f2] border-transparent text-[#1a1a1a] text-xs placeholder:text-[#888] focus:bg-[#eaeaea] focus:border-transparent transition-all outline-none"
+                  className="h-8 pl-8 pr-4 rounded-full bg-[#f2f2f2] border-transparent text-[#1a1a1a] text-xs placeholder:text-[#888] focus:bg-[#eaeaea] focus:border-transparent transition-all outline-none w-full"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.trim() && setShowDropdown(true)}
@@ -247,40 +249,44 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
                 {/* Search Dropdown */}
                 {showDropdown && (
                   <div className="absolute top-full right-0 w-[280px] md:w-[320px] mt-2 bg-white border border-[#f2f2f2] rounded-md shadow-lg z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    {searchResults.length > 0 ? (
-                      <div className="py-2">
-                        <div className="px-4 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                          Products
-                        </div>
-                        {searchResults.map(product => {
-                          const fallbackImage = PlaceHolderImages.find(i => i.id === product.imageId) || { imageUrl: '' };
-                          const displayImage = product.productImage || (product.images && product.images.length > 0 ? product.images[0] : '') || fallbackImage.imageUrl || '';
+                    <div className="py-2">
+                      <div className="px-4 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                        Products
+                      </div>
+                      {searchResults.map(product => {
+                        const fallbackImage = PlaceHolderImages.find(i => i.id === product.imageId) || { imageUrl: '' };
+                        const displayImage = product.productImage || (product.images && product.images.length > 0 ? product.images[0] : '') || fallbackImage.imageUrl || '';
 
-                          return (
-                            <div
-                              key={product.id}
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#f9f6f0] cursor-pointer transition-colors"
-                              onClick={() => handleProductClick(product.id)}
-                            >
-                              <div className="h-9 w-9 rounded bg-[#f2f2f2] relative overflow-hidden shrink-0">
-                                <img src={displayImage} alt={product.name} className="object-cover w-full h-full" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="text-xs font-semibold text-[#1a1a1a] line-clamp-1">{product.name}</h4>
-                                <p className="text-[11px] text-primary font-bold">₹{product.price}</p>
-                              </div>
+                        return (
+                          <div
+                            key={product.id}
+                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#f9f6f0] cursor-pointer transition-colors"
+                            onClick={() => handleProductClick(product.id)}
+                          >
+                            <div className="h-9 w-9 rounded bg-[#f2f2f2] relative overflow-hidden shrink-0">
+                              <img src={displayImage} alt={product.name} className="object-cover w-full h-full" />
                             </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="p-6 text-center text-muted-foreground text-xs">
-                        <p>No results found for "{searchQuery}"</p>
-                      </div>
-                    )}
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-xs font-semibold text-[#1a1a1a] line-clamp-1">{product.name}</h4>
+                              <p className="text-[11px] text-primary font-bold">₹{product.price}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
+            )}
+
+            {/* Mobile Search Toggle Button */}
+            {!(pathname === '/' && !fetchAllAtOnce) && !pathname.startsWith('/product/') && (
+              <button 
+                onClick={() => setShowMobileSearch(!showMobileSearch)}
+                className="p-1.5 text-[#1a1a1a] hover:text-primary transition-colors shrink-0 md:hidden"
+              >
+                <Search className="h-5 w-5 stroke-[1.8]" />
+              </button>
             )}
 
             {/* Wishlist */}
@@ -308,6 +314,62 @@ const Header = ({ companyName = "ManaBuy", fetchAllAtOnce = true }: { companyNam
             </CartSheet>
           </div>
         </div>
+
+        {/* Mobile Search Bar Row (renders below top row when active) */}
+        {showMobileSearch && !(pathname === '/' && !fetchAllAtOnce) && !pathname.startsWith('/product/') && (
+          <div className="pb-3 md:hidden animate-in slide-in-from-top-2 duration-300 relative" ref={searchRef}>
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#888]" />
+              <Input
+                placeholder={activeCategory ? `Search in ${activeCategory.name}...` : (text.searchPlaceholder || "Search here...")}
+                className="h-9 pl-9 pr-8 rounded-full bg-[#f2f2f2] border-transparent text-[#1a1a1a] text-xs focus:bg-[#eaeaea] outline-none w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery.trim() && setShowDropdown(true)}
+                autoFocus
+              />
+              {searchQuery && (
+                <button 
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-[#1a1a1a]"
+                  onClick={() => { setSearchQuery(''); setShowDropdown(false); }}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Search Dropdown */}
+            {showDropdown && (
+              <div className="absolute left-0 right-0 mt-2 bg-white border border-[#f2f2f2] rounded-md shadow-lg z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="py-2">
+                  <div className="px-4 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Products
+                  </div>
+                  {searchResults.map(product => {
+                    const fallbackImage = PlaceHolderImages.find(i => i.id === product.imageId) || { imageUrl: '' };
+                    const displayImage = product.productImage || (product.images && product.images.length > 0 ? product.images[0] : '') || fallbackImage.imageUrl || '';
+
+                    return (
+                      <div
+                        key={product.id}
+                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#f9f6f0] cursor-pointer transition-colors"
+                        onClick={() => handleProductClick(product.id)}
+                      >
+                        <div className="h-9 w-9 rounded bg-[#f2f2f2] relative overflow-hidden shrink-0">
+                          <img src={displayImage} alt={product.name} className="object-cover w-full h-full" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-xs font-semibold text-[#1a1a1a] line-clamp-1">{product.name}</h4>
+                          <p className="text-[11px] text-primary font-bold">₹{product.price}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Bottom Row - Centered Navigation Menu */}
         <div className="border-t border-[#f2f2f2] h-11 flex items-center justify-center overflow-x-auto md:overflow-visible no-scrollbar">
