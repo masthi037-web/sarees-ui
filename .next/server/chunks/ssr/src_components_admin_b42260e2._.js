@@ -907,7 +907,11 @@ const CompanyOrdersSheet = ({ children })=>{
             } else {
                 data = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$order$2e$service$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["orderService"].getCompanyOrdersByRange(companyDetails.companyId, fromDate, toDate);
             }
-            const sortedData = (data || []).sort((a, b)=>new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            let filteredOrders = data || [];
+            if (companyDetails.companyId === 'ananthajewellers' || companyDetails.companyId.toLowerCase().includes('anantha')) {
+                filteredOrders = filteredOrders.filter((order)=>order.orderStatus !== 'CREATED');
+            }
+            const sortedData = filteredOrders.sort((a, b)=>new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setOrders(sortedData);
         } catch (error) {
             console.error("Failed to fetch orders", error);
@@ -944,7 +948,7 @@ const CompanyOrdersSheet = ({ children })=>{
                 children: children
             }, void 0, false, {
                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                lineNumber: 103,
+                lineNumber: 108,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SheetContent"], {
@@ -970,12 +974,12 @@ const CompanyOrdersSheet = ({ children })=>{
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                    lineNumber: 120,
+                                                    lineNumber: 125,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 114,
+                                                lineNumber: 119,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SheetTitle"], {
@@ -983,13 +987,13 @@ const CompanyOrdersSheet = ({ children })=>{
                                                 children: "Order Details"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 122,
+                                                lineNumber: 127,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 113,
+                                        lineNumber: 118,
                                         columnNumber: 33
                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SheetTitle"], {
                                         className: "flex items-center gap-2 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60",
@@ -998,7 +1002,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                 className: "h-5 w-5 text-primary"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 126,
+                                                lineNumber: 131,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             companyDetails?.companyName || 'Company',
@@ -1006,17 +1010,17 @@ const CompanyOrdersSheet = ({ children })=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 125,
+                                        lineNumber: 130,
                                         columnNumber: 33
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                    lineNumber: 111,
+                                    lineNumber: 116,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                lineNumber: 110,
+                                lineNumber: 115,
                                 columnNumber: 21
                             }, ("TURBOPACK compile-time value", void 0)),
                             !selectedOrder && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1031,7 +1035,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                 children: "Single Date"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 138,
+                                                lineNumber: 143,
                                                 columnNumber: 34
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1040,13 +1044,13 @@ const CompanyOrdersSheet = ({ children })=>{
                                                 children: "Date Range"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 149,
+                                                lineNumber: 154,
                                                 columnNumber: 34
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 137,
+                                        lineNumber: 142,
                                         columnNumber: 30
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     mode === 'single' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1057,7 +1061,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                 children: "Select Date"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 165,
+                                                lineNumber: 170,
                                                 columnNumber: 38
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1068,20 +1072,20 @@ const CompanyOrdersSheet = ({ children })=>{
                                                 className: "pt-5 h-14 pl-3 font-black bg-secondary/40 border-secondary/60 focus:bg-background focus:border-primary/50 transition-all cursor-pointer text-base text-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 166,
+                                                lineNumber: 171,
                                                 columnNumber: 38
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"], {
                                                 className: "absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary pointer-events-none group-focus-within:scale-110 transition-transform"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 173,
+                                                lineNumber: 178,
                                                 columnNumber: 38
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 164,
+                                        lineNumber: 169,
                                         columnNumber: 34
                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "flex items-center gap-2",
@@ -1094,7 +1098,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         children: "From"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 178,
+                                                        lineNumber: 183,
                                                         columnNumber: 42
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1105,20 +1109,20 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         className: "pt-5 h-14 pl-3 font-black bg-secondary/40 border-secondary/60 focus:bg-background focus:border-primary/50 transition-all cursor-pointer text-sm text-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 179,
+                                                        lineNumber: 184,
                                                         columnNumber: 42
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"], {
                                                         className: "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60 pointer-events-none"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 186,
+                                                        lineNumber: 191,
                                                         columnNumber: 42
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 177,
+                                                lineNumber: 182,
                                                 columnNumber: 38
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1129,7 +1133,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         children: "To"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 189,
+                                                        lineNumber: 194,
                                                         columnNumber: 42
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1140,26 +1144,26 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         className: "pt-5 h-14 pl-3 font-black bg-secondary/40 border-secondary/60 focus:bg-background focus:border-primary/50 transition-all cursor-pointer text-sm text-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 190,
+                                                        lineNumber: 195,
                                                         columnNumber: 42
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"], {
                                                         className: "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60 pointer-events-none"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 197,
+                                                        lineNumber: 202,
                                                         columnNumber: 42
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 188,
+                                                lineNumber: 193,
                                                 columnNumber: 38
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 181,
                                         columnNumber: 34
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1173,7 +1177,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         children: "Customer Phone"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 205,
+                                                        lineNumber: 210,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1183,20 +1187,20 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         className: "pt-5 h-12 pl-3 font-bold bg-secondary/30 border-secondary/40 focus:bg-background focus:border-primary/30 transition-all"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 206,
+                                                        lineNumber: 211,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$search$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Search$3e$__["Search"], {
                                                         className: "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 pointer-events-none"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 212,
+                                                        lineNumber: 217,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 204,
+                                                lineNumber: 209,
                                                 columnNumber: 34
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1207,7 +1211,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         children: "Status"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 216,
+                                                        lineNumber: 221,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Select"], {
@@ -1220,12 +1224,12 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                     placeholder: "All"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                    lineNumber: 219,
+                                                                    lineNumber: 224,
                                                                     columnNumber: 46
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 218,
+                                                                lineNumber: 223,
                                                                 columnNumber: 42
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1235,7 +1239,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                         children: "All"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                        lineNumber: 222,
+                                                                        lineNumber: 227,
                                                                         columnNumber: 46
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     [
@@ -1252,31 +1256,31 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                             children: status === 'PAYMENT_PENDING' ? 'Pay Pending' : status
                                                                         }, status, false, {
                                                                             fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                            lineNumber: 224,
+                                                                            lineNumber: 229,
                                                                             columnNumber: 50
                                                                         }, ("TURBOPACK compile-time value", void 0)))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 221,
+                                                                lineNumber: 226,
                                                                 columnNumber: 42
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 217,
+                                                        lineNumber: 222,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 215,
+                                                lineNumber: 220,
                                                 columnNumber: 34
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 203,
+                                        lineNumber: 208,
                                         columnNumber: 30
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1289,7 +1293,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         className: "absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 236,
+                                                        lineNumber: 241,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1297,7 +1301,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         children: "Revenue"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 237,
+                                                        lineNumber: 242,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1308,13 +1312,13 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 238,
+                                                        lineNumber: 243,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 235,
+                                                lineNumber: 240,
                                                 columnNumber: 34
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1324,7 +1328,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         className: "absolute inset-0 bg-secondary/60 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 243,
+                                                        lineNumber: 248,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1332,7 +1336,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         children: "Total Orders"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 244,
+                                                        lineNumber: 249,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1342,38 +1346,38 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                 className: "h-4 w-4 text-primary"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 246,
+                                                                lineNumber: 251,
                                                                 columnNumber: 42
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             totalOrders
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 245,
+                                                        lineNumber: 250,
                                                         columnNumber: 38
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 242,
+                                                lineNumber: 247,
                                                 columnNumber: 34
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 234,
+                                        lineNumber: 239,
                                         columnNumber: 30
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                lineNumber: 135,
+                                lineNumber: 140,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                        lineNumber: 109,
+                        lineNumber: 114,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1384,12 +1388,12 @@ const CompanyOrdersSheet = ({ children })=>{
                                 className: "h-8 w-8 animate-spin text-primary"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                lineNumber: 259,
+                                lineNumber: 264,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                            lineNumber: 258,
+                            lineNumber: 263,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)) : selectedOrder ? // Detail View
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$history$2f$OrderDetails$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["OrderDetails"], {
@@ -1419,7 +1423,7 @@ const CompanyOrdersSheet = ({ children })=>{
                             }
                         }, void 0, false, {
                             fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                            lineNumber: 263,
+                            lineNumber: 268,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)) : filteredOrders.length > 0 ? // List View
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$scroll$2d$area$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ScrollArea"], {
@@ -1449,7 +1453,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                        lineNumber: 308,
+                                                                        lineNumber: 313,
                                                                         columnNumber: 53
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1457,13 +1461,13 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                         children: order.orderStatus
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                        lineNumber: 311,
+                                                                        lineNumber: 316,
                                                                         columnNumber: 53
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 307,
+                                                                lineNumber: 312,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1471,13 +1475,13 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                 children: order.customerName
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 320,
+                                                                lineNumber: 325,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 306,
+                                                        lineNumber: 311,
                                                         columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1488,13 +1492,13 @@ const CompanyOrdersSheet = ({ children })=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 322,
+                                                        lineNumber: 327,
                                                         columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 305,
+                                                lineNumber: 310,
                                                 columnNumber: 41
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1507,7 +1511,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                 className: "h-3.5 w-3.5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 329,
+                                                                lineNumber: 334,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1517,13 +1521,13 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 330,
+                                                                lineNumber: 335,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 328,
+                                                        lineNumber: 333,
                                                         columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1533,7 +1537,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                 className: "h-3.5 w-3.5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 333,
+                                                                lineNumber: 338,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1541,42 +1545,42 @@ const CompanyOrdersSheet = ({ children })=>{
                                                                 children: order.deliveryCity
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                                lineNumber: 334,
+                                                                lineNumber: 339,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                        lineNumber: 332,
+                                                        lineNumber: 337,
                                                         columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 327,
+                                                lineNumber: 332,
                                                 columnNumber: 41
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                 className: "absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/30 group-hover:text-primary transition-colors"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                                lineNumber: 338,
+                                                lineNumber: 343,
                                                 columnNumber: 41
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, order.orderId, true, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 296,
+                                        lineNumber: 301,
                                         columnNumber: 37
                                     }, ("TURBOPACK compile-time value", void 0)))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                lineNumber: 294,
+                                lineNumber: 299,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                            lineNumber: 293,
+                            lineNumber: 298,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)) : // Empty State
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1588,12 +1592,12 @@ const CompanyOrdersSheet = ({ children })=>{
                                         className: "h-10 w-10 text-muted-foreground/40"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                        lineNumber: 347,
+                                        lineNumber: 352,
                                         columnNumber: 33
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                    lineNumber: 346,
+                                    lineNumber: 351,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1601,7 +1605,7 @@ const CompanyOrdersSheet = ({ children })=>{
                                     children: "No Orders Found"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                    lineNumber: 349,
+                                    lineNumber: 354,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1609,30 +1613,30 @@ const CompanyOrdersSheet = ({ children })=>{
                                     children: statusFilter !== 'ALL' ? `No ${statusFilter.toLowerCase()} orders found.` : `No orders found between ${(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(fromDate), "MMM d")} and ${(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(toDate), "MMM d")}.`
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                                    lineNumber: 350,
+                                    lineNumber: 355,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                            lineNumber: 345,
+                            lineNumber: 350,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                        lineNumber: 256,
+                        lineNumber: 261,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-                lineNumber: 106,
+                lineNumber: 111,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/admin/CompanyOrdersSheet.tsx",
-        lineNumber: 102,
+        lineNumber: 107,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };

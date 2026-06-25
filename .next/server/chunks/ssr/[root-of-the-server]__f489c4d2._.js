@@ -29,35 +29,35 @@ function mapApiCategoriesToAppCategories(apiCategories, deliveryTime) {
         const nestedCatalogues = item.catalogues || item.catalogueResponseList || item.catalogue_response_list || [];
         const productsAtCategoryLevel = item.products || item.productList || item.product_list || [];
         if (nestedCatalogues.length > 0) {
-            const mappedCatalogs = nestedCatalogues.map((c)=>mapApiCatalogueToAppCatalog(c, deliveryTime));
+            const mappedCatalogs = nestedCatalogues.map((c)=>mapApiCatalogueToAppCatalog(c, deliveryTime, catId));
             appCat.catalogs.push(...mappedCatalogs);
             // Prefer picking up name/image from the parent category object
             if (!appCat.name) appCat.name = item.categoryName || item.name || '';
             if (!appCat.categoryImage) appCat.categoryImage = item.categoryImage || item.image || '';
         } else if (item.catalogueId || item.catalogue_id) {
-            appCat.catalogs.push(mapApiCatalogueToAppCatalog(item, deliveryTime));
+            appCat.catalogs.push(mapApiCatalogueToAppCatalog(item, deliveryTime, catId));
         } else if (productsAtCategoryLevel.length > 0) {
             appCat.catalogs.push({
                 id: `default-${catId}`,
                 name: 'All Products',
                 catalogueImage: item.categoryImage || item.image || '',
-                products: productsAtCategoryLevel.map((p)=>mapApiProductToAppProduct(p, deliveryTime))
+                products: productsAtCategoryLevel.map((p)=>mapApiProductToAppProduct(p, deliveryTime, catId))
             });
         }
     });
     return Array.from(categoryMap.values());
 }
-function mapApiCatalogueToAppCatalog(apiCat, deliveryTime) {
+function mapApiCatalogueToAppCatalog(apiCat, deliveryTime, categoryId) {
     const catalogId = String(apiCat.catalogueId || apiCat.id || apiCat.catalogue_id || '');
     const products = apiCat.products || apiCat.productList || apiCat.product_list || [];
     return {
         id: catalogId,
         name: apiCat.catalogueName || apiCat.name || '',
-        products: products.map((p)=>mapApiProductToAppProduct(p, deliveryTime)),
+        products: products.map((p)=>mapApiProductToAppProduct(p, deliveryTime, categoryId)),
         catalogueImage: apiCat.catalogueImage || apiCat.image || ''
     };
 }
-function mapApiProductToAppProduct(apiProd, deliveryTime) {
+function mapApiProductToAppProduct(apiProd, deliveryTime, categoryId) {
     // Logic to determine price: use the first pricing option or default to 0
     const firstPricing = apiProd.productSize && apiProd.productSize.length > 0 ? apiProd.productSize[0] : null;
     // Logic to map variants from pricing if available
@@ -134,7 +134,9 @@ function mapApiProductToAppProduct(apiProd, deliveryTime) {
                 image: c.productPics,
                 status: c.colourStatus,
                 colourStatus: c.colourStatus
-            }))
+            })),
+        categoryId: categoryId || (apiProd.catalogueId ? String(apiProd.catalogueId) : undefined),
+        catalogueId: apiProd.catalogueId ? String(apiProd.catalogueId) : undefined
     };
 }
 }),
@@ -275,6 +277,8 @@ async function fetchProductDetails(productId) {
 }
 async function validateCheckout(payload) {
     try {
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
         const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$api$2d$client$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["apiClient"])('/product/checkout/check', {
             method: 'POST',
             body: JSON.stringify(payload),

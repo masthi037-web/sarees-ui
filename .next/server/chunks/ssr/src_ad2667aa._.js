@@ -1537,43 +1537,53 @@ const iconMap = {
 const defaultFeatures = [
     {
         id: 1,
-        title: "100% Authentic",
-        description: "Original recipes & ingredients",
-        icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"],
-        color: "text-teal-600",
-        bgColor: "bg-teal-50",
-        iconColor: "text-teal-600"
+        title: "PURE COMFORT",
+        description: "Handcrafted pure silk fabrics",
+        icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$heart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Heart$3e$__["Heart"],
+        color: "text-[#c2410c]",
+        bgColor: "bg-[#c2410c]/5",
+        iconColor: "text-[#c2410c]"
     },
     {
         id: 2,
-        title: "Fast Delivery",
-        description: "Fresh to your door.",
+        title: "WORLDWIDE SHIPPING",
+        description: "Delivering to your doorstep globally",
         icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$truck$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Truck$3e$__["Truck"],
-        color: "text-green-600",
-        bgColor: "bg-green-50",
-        iconColor: "text-green-600"
+        color: "text-[#c2410c]",
+        bgColor: "bg-[#c2410c]/5",
+        iconColor: "text-[#c2410c]"
     },
     {
         id: 3,
-        title: "Premium Quality",
-        description: "Hand-picked by experts",
-        icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$star$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Star$3e$__["Star"],
-        color: "text-amber-600",
-        bgColor: "bg-amber-50",
-        iconColor: "text-amber-600"
+        title: "ASSURED QUALITY",
+        description: "Rigorous quality checks for every weave",
+        icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"],
+        color: "text-[#c2410c]",
+        bgColor: "bg-[#c2410c]/5",
+        iconColor: "text-[#c2410c]"
+    },
+    {
+        id: 4,
+        title: "FINEST THREADS",
+        description: "Woven with premium zari & yarns",
+        icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$award$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Award$3e$__["Award"],
+        color: "text-[#c2410c]",
+        bgColor: "bg-[#c2410c]/5",
+        iconColor: "text-[#c2410c]"
+    },
+    {
+        id: 5,
+        title: "HASSLE-FREE RETURNS",
+        description: "Easy returns and exchange policy",
+        icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$gift$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Gift$3e$__["Gift"],
+        color: "text-[#c2410c]",
+        bgColor: "bg-[#c2410c]/5",
+        iconColor: "text-[#c2410c]"
     }
 ];
 function FeaturesCarousel({ features }) {
-    // Map API features to component format or use default
-    const displayFeatures = features && features.length > 0 ? features.map((f, index)=>({
-            id: index,
-            title: f.title,
-            description: f.description,
-            icon: iconMap[f.icon] || __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$star$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Star$3e$__["Star"],
-            color: f.color || "text-primary",
-            bgColor: f.bgColor || "bg-primary/10",
-            iconColor: f.iconColor || "text-primary"
-        })) : defaultFeatures;
+    // Always use the custom features for Tirumala Sarees
+    const displayFeatures = defaultFeatures;
     // Duplicate the items to create a seamless loop
     const carouselItems = [
         ...displayFeatures,
@@ -1582,71 +1592,72 @@ function FeaturesCarousel({ features }) {
         ...displayFeatures
     ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "w-full overflow-hidden bg-background py-8 border-b border-border/40",
+        className: "w-full overflow-hidden bg-[#fdf9f2] py-6 border-y border-[#f5eedc]",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]",
             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "animate-marquee flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none",
+                className: "animate-marquee flex items-center justify-start [&_li]:mx-4 [&_img]:max-w-none",
                 children: carouselItems.map((item, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex items-center gap-4 bg-card border border-border/50 rounded-2xl p-4 min-w-[280px] shadow-sm mx-3",
+                        className: "flex items-center gap-4 bg-white border border-[#f5eedc] rounded-none p-4 min-w-[280px] shadow-sm mx-3",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("w-12 h-12 rounded-full flex items-center justify-center shrink-0", item.bgColor),
+                                className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("w-10 h-10 rounded-full flex items-center justify-center shrink-0", item.bgColor),
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(item.icon, {
-                                    className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("w-6 h-6", item.iconColor)
+                                    className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("w-5 h-5", item.iconColor)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-                                    lineNumber: 86,
+                                    lineNumber: 94,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-                                lineNumber: 85,
+                                lineNumber: 93,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "text-left",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                        className: "font-bold text-foreground leading-tight",
+                                        className: "font-bold text-[#1a1a1a] text-xs tracking-wider leading-tight",
                                         children: item.title
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-                                        lineNumber: 89,
+                                        lineNumber: 97,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-xs text-muted-foreground mt-0.5",
+                                        className: "text-[10px] text-muted-foreground mt-1",
                                         children: item.description
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-                                        lineNumber: 90,
+                                        lineNumber: 98,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-                                lineNumber: 88,
+                                lineNumber: 96,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, `${item.id}-${index}`, true, {
                         fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-                        lineNumber: 81,
+                        lineNumber: 89,
                         columnNumber: 25
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-                lineNumber: 79,
+                lineNumber: 87,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-            lineNumber: 78,
+            lineNumber: 86,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/home/FeaturesCarousel.tsx",
-        lineNumber: 77,
+        lineNumber: 85,
         columnNumber: 9
     }, this);
 }

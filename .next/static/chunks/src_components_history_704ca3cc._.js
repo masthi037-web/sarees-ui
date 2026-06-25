@@ -998,9 +998,11 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$sheet$2d$back$2d$handler$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/hooks/use-sheet-back-handler.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$order$2e$service$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/services/order.service.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$history$2f$OrderDetails$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/history/OrderDetails.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$providers$2f$TenantContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/providers/TenantContext.tsx [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 'use client';
+;
 ;
 ;
 ;
@@ -1019,6 +1021,7 @@ function HistorySheet(param) {
     const [orders, setOrders] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [selectedOrder, setSelectedOrder] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const tenant = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$providers$2f$TenantContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTenant"])();
     // Handle back button on mobile
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$sheet$2d$back$2d$handler$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSheetBackHandler"])(isOpen, setIsOpen);
     const fetchHistory = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
@@ -1028,7 +1031,13 @@ function HistorySheet(param) {
             setLoading(true);
             try {
                 const data = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$order$2e$service$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["orderService"].getCustomerOrders(customerId);
-                const sorted = (data || []).sort({
+                let filteredOrders = data || [];
+                if (tenant.id.toLowerCase().includes('anantha')) {
+                    filteredOrders = filteredOrders.filter({
+                        "HistorySheet.useCallback[fetchHistory]": (order)=>order.orderStatus !== 'CREATED'
+                    }["HistorySheet.useCallback[fetchHistory]"]);
+                }
+                const sorted = filteredOrders.sort({
                     "HistorySheet.useCallback[fetchHistory].sorted": (a, b)=>{
                         const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
                         const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -1042,7 +1051,9 @@ function HistorySheet(param) {
                 setLoading(false);
             }
         }
-    }["HistorySheet.useCallback[fetchHistory]"], []);
+    }["HistorySheet.useCallback[fetchHistory]"], [
+        tenant.id
+    ]);
     // Fetch orders when sheet opens
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "HistorySheet.useEffect": ()=>{
@@ -1099,7 +1110,7 @@ function HistorySheet(param) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                lineNumber: 100,
+                lineNumber: 107,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SheetContent"], {
@@ -1110,7 +1121,7 @@ function HistorySheet(param) {
                     onBack: ()=>setSelectedOrder(null)
                 }, void 0, false, {
                     fileName: "[project]/src/components/history/HistorySheet.tsx",
-                    lineNumber: 112,
+                    lineNumber: 119,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                     children: [
@@ -1125,24 +1136,24 @@ function HistorySheet(param) {
                                             className: "w-5 h-5 text-primary"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                            lineNumber: 119,
+                                            lineNumber: 126,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                        lineNumber: 118,
+                                        lineNumber: 125,
                                         columnNumber: 33
                                     }, this),
                                     "Order History"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                lineNumber: 117,
+                                lineNumber: 124,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/history/HistorySheet.tsx",
-                            lineNumber: 116,
+                            lineNumber: 123,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$scroll$2d$area$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ScrollArea"], {
@@ -1154,7 +1165,7 @@ function HistorySheet(param) {
                                         className: "h-8 w-8 animate-spin text-primary opacity-50 mb-2"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                        lineNumber: 129,
+                                        lineNumber: 136,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1162,13 +1173,13 @@ function HistorySheet(param) {
                                         children: "Loading orders..."
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                        lineNumber: 130,
+                                        lineNumber: 137,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                lineNumber: 128,
+                                lineNumber: 135,
                                 columnNumber: 33
                             }, this) : orders.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-6 pb-20",
@@ -1182,62 +1193,62 @@ function HistorySheet(param) {
                                         onClick: ()=>setSelectedOrder(order),
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex justify-between items-start mb-6",
+                                                className: "flex justify-between items-start mb-6 gap-2",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "space-y-1.5",
+                                                        className: "space-y-1.5 flex-1 min-w-0",
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "flex items-center gap-2",
+                                                                className: "flex items-center gap-2 min-w-0",
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                        className: "rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-0 shadow-sm ".concat(getStatusColor(order.orderStatus)),
+                                                                        className: "shrink-0 rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-0 shadow-sm ".concat(getStatusColor(order.orderStatus)),
                                                                         children: order.orderStatus
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                        lineNumber: 145,
+                                                                        lineNumber: 152,
                                                                         columnNumber: 57
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "text-[11px] font-mono text-slate-400",
+                                                                        className: "text-[11px] font-mono text-slate-400 truncate",
                                                                         children: [
                                                                             "#",
                                                                             ((_order_orderNumber = order.orderNumber) === null || _order_orderNumber === void 0 ? void 0 : _order_orderNumber.split('-').pop()) || order.orderId
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                        lineNumber: 148,
+                                                                        lineNumber: 155,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                lineNumber: 144,
+                                                                lineNumber: 151,
                                                                 columnNumber: 53
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: "text-xs font-medium text-slate-500 pl-1",
+                                                                className: "text-xs font-medium text-slate-500 pl-1 truncate",
                                                                 children: formatDate(order.createdAt)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                lineNumber: 152,
+                                                                lineNumber: 159,
                                                                 columnNumber: 53
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                        lineNumber: 143,
+                                                        lineNumber: 150,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-right",
+                                                        className: "text-right shrink-0",
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: "text-2xl font-black text-slate-900 font-headline tracking-tight leading-none",
-                                                                children: formatCurrency(order.finalTotalAmount)
+                                                                className: "text-xl sm:text-2xl font-black text-slate-900 font-headline tracking-tight leading-none block",
+                                                                children: order.finalTotalAmount !== undefined ? formatCurrency(order.finalTotalAmount) : 'Pending'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                lineNumber: 157,
+                                                                lineNumber: 164,
                                                                 columnNumber: 53
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1248,19 +1259,19 @@ function HistorySheet(param) {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                lineNumber: 160,
+                                                                lineNumber: 167,
                                                                 columnNumber: 53
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                        lineNumber: 156,
+                                                        lineNumber: 163,
                                                         columnNumber: 49
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                lineNumber: 142,
+                                                lineNumber: 149,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1283,7 +1294,7 @@ function HistorySheet(param) {
                                                                     className: "object-cover"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                    lineNumber: 180,
+                                                                    lineNumber: 187,
                                                                     columnNumber: 69
                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "w-full h-full flex items-center justify-center bg-slate-50",
@@ -1291,17 +1302,17 @@ function HistorySheet(param) {
                                                                         className: "w-5 h-5 text-slate-300"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                        lineNumber: 188,
+                                                                        lineNumber: 195,
                                                                         columnNumber: 73
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                    lineNumber: 187,
+                                                                    lineNumber: 194,
                                                                     columnNumber: 69
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                lineNumber: 178,
+                                                                lineNumber: 185,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1312,7 +1323,7 @@ function HistorySheet(param) {
                                                                         children: item.productName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                        lineNumber: 193,
+                                                                        lineNumber: 200,
                                                                         columnNumber: 65
                                                                     }, this),
                                                                     variantText.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1320,17 +1331,17 @@ function HistorySheet(param) {
                                                                         children: variantText.join(' • ')
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                        lineNumber: 197,
+                                                                        lineNumber: 204,
                                                                         columnNumber: 69
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                lineNumber: 192,
+                                                                lineNumber: 199,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "text-right pl-2 flex flex-col items-end",
+                                                                className: "text-right pl-2 shrink-0 flex flex-col items-end",
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                         className: "text-sm font-black text-slate-900 opacity-60",
@@ -1340,7 +1351,7 @@ function HistorySheet(param) {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                        lineNumber: 203,
+                                                                        lineNumber: 210,
                                                                         columnNumber: 65
                                                                     }, this),
                                                                     item.productSizeColourExtraPrice && item.productSizeColourExtraPrice > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1351,37 +1362,37 @@ function HistorySheet(param) {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                        lineNumber: 205,
+                                                                        lineNumber: 212,
                                                                         columnNumber: 69
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                                lineNumber: 202,
+                                                                lineNumber: 209,
                                                                 columnNumber: 61
                                                             }, this)
                                                         ]
                                                     }, idx, true, {
                                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                        lineNumber: 177,
+                                                        lineNumber: 184,
                                                         columnNumber: 57
                                                     }, this);
                                                 })
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                lineNumber: 167,
+                                                lineNumber: 174,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, order.orderId, true, {
                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                        lineNumber: 135,
+                                        lineNumber: 142,
                                         columnNumber: 41
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                lineNumber: 133,
+                                lineNumber: 140,
                                 columnNumber: 33
                             }, this) : /* Empty State */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex flex-col items-center justify-center py-12 text-center space-y-6 animate-in fade-in zoom-in-95 duration-300",
@@ -1393,7 +1404,7 @@ function HistorySheet(param) {
                                                 className: "absolute inset-0 bg-primary/20 blur-2xl rounded-full"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                lineNumber: 221,
+                                                lineNumber: 228,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1402,18 +1413,18 @@ function HistorySheet(param) {
                                                     className: "w-10 h-10 text-muted-foreground/60"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                    lineNumber: 223,
+                                                    lineNumber: 230,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                lineNumber: 222,
+                                                lineNumber: 229,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                        lineNumber: 220,
+                                        lineNumber: 227,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1424,7 +1435,7 @@ function HistorySheet(param) {
                                                 children: "No orders yet"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                lineNumber: 227,
+                                                lineNumber: 234,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1432,13 +1443,13 @@ function HistorySheet(param) {
                                                 children: "Your order history will appear here once you make a purchase."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                                lineNumber: 228,
+                                                lineNumber: 235,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                        lineNumber: 226,
+                                        lineNumber: 233,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1446,36 +1457,37 @@ function HistorySheet(param) {
                                         children: "Start Shopping"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                        lineNumber: 232,
+                                        lineNumber: 239,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                                lineNumber: 219,
+                                lineNumber: 226,
                                 columnNumber: 33
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/history/HistorySheet.tsx",
-                            lineNumber: 126,
+                            lineNumber: 133,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true)
             }, void 0, false, {
                 fileName: "[project]/src/components/history/HistorySheet.tsx",
-                lineNumber: 103,
+                lineNumber: 110,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/history/HistorySheet.tsx",
-        lineNumber: 99,
+        lineNumber: 106,
         columnNumber: 9
     }, this);
 }
-_s(HistorySheet, "ZcCv14q4zdPPL49WgRJSePP45LM=", false, function() {
+_s(HistorySheet, "fylYqJ/UKJkMZerwy4mNf+pPgx8=", false, function() {
     return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$providers$2f$TenantContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTenant"],
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$sheet$2d$back$2d$handler$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSheetBackHandler"]
     ];
 });

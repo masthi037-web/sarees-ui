@@ -511,9 +511,18 @@ const useProduct = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modu
         setProducts: (products)=>set((state)=>({
                     products: typeof products === 'function' ? products(state.products) : products
                 })),
-        setCategories: (categories)=>set((state)=>({
-                    categories: typeof categories === 'function' ? categories(state.categories) : categories
-                })),
+        setCategories: (categories)=>set((state)=>{
+                const nextCategories = typeof categories === 'function' ? categories(state.categories) : categories;
+                const nextProducts = nextCategories.flatMap((cat)=>(cat.catalogs || []).flatMap((c)=>c.products || [])).map((p)=>({
+                        ...p,
+                        imageHint: "",
+                        imageUrl: p.productImage || ""
+                    }));
+                return {
+                    categories: nextCategories,
+                    products: nextProducts
+                };
+            }),
         setSelectedProduct: (selectedProduct)=>set({
                 selectedProduct
             }),
@@ -889,35 +898,35 @@ function mapApiCategoriesToAppCategories(apiCategories, deliveryTime) {
         const nestedCatalogues = item.catalogues || item.catalogueResponseList || item.catalogue_response_list || [];
         const productsAtCategoryLevel = item.products || item.productList || item.product_list || [];
         if (nestedCatalogues.length > 0) {
-            const mappedCatalogs = nestedCatalogues.map((c)=>mapApiCatalogueToAppCatalog(c, deliveryTime));
+            const mappedCatalogs = nestedCatalogues.map((c)=>mapApiCatalogueToAppCatalog(c, deliveryTime, catId));
             appCat.catalogs.push(...mappedCatalogs);
             // Prefer picking up name/image from the parent category object
             if (!appCat.name) appCat.name = item.categoryName || item.name || '';
             if (!appCat.categoryImage) appCat.categoryImage = item.categoryImage || item.image || '';
         } else if (item.catalogueId || item.catalogue_id) {
-            appCat.catalogs.push(mapApiCatalogueToAppCatalog(item, deliveryTime));
+            appCat.catalogs.push(mapApiCatalogueToAppCatalog(item, deliveryTime, catId));
         } else if (productsAtCategoryLevel.length > 0) {
             appCat.catalogs.push({
                 id: `default-${catId}`,
                 name: 'All Products',
                 catalogueImage: item.categoryImage || item.image || '',
-                products: productsAtCategoryLevel.map((p)=>mapApiProductToAppProduct(p, deliveryTime))
+                products: productsAtCategoryLevel.map((p)=>mapApiProductToAppProduct(p, deliveryTime, catId))
             });
         }
     });
     return Array.from(categoryMap.values());
 }
-function mapApiCatalogueToAppCatalog(apiCat, deliveryTime) {
+function mapApiCatalogueToAppCatalog(apiCat, deliveryTime, categoryId) {
     const catalogId = String(apiCat.catalogueId || apiCat.id || apiCat.catalogue_id || '');
     const products = apiCat.products || apiCat.productList || apiCat.product_list || [];
     return {
         id: catalogId,
         name: apiCat.catalogueName || apiCat.name || '',
-        products: products.map((p)=>mapApiProductToAppProduct(p, deliveryTime)),
+        products: products.map((p)=>mapApiProductToAppProduct(p, deliveryTime, categoryId)),
         catalogueImage: apiCat.catalogueImage || apiCat.image || ''
     };
 }
-function mapApiProductToAppProduct(apiProd, deliveryTime) {
+function mapApiProductToAppProduct(apiProd, deliveryTime, categoryId) {
     // Logic to determine price: use the first pricing option or default to 0
     const firstPricing = apiProd.productSize && apiProd.productSize.length > 0 ? apiProd.productSize[0] : null;
     // Logic to map variants from pricing if available
@@ -994,7 +1003,9 @@ function mapApiProductToAppProduct(apiProd, deliveryTime) {
                 image: c.productPics,
                 status: c.colourStatus,
                 colourStatus: c.colourStatus
-            }))
+            })),
+        categoryId: categoryId || (apiProd.catalogueId ? String(apiProd.catalogueId) : undefined),
+        catalogueId: apiProd.catalogueId ? String(apiProd.catalogueId) : undefined
     };
 }
 }),
@@ -1296,7 +1307,7 @@ const orderService = {
                 customerId
             },
             next: {
-                revalidate: 10800,
+                revalidate: 60,
                 tags: [
                     'orders'
                 ]
