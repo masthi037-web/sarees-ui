@@ -7,7 +7,8 @@ import Loading from './loading';
 import AppShell from '@/components/layout/AppShell';
 
 export const metadata: Metadata = {
-  title: 'ManaBuy',
+  metadataBase: new URL('https://www.tirumalacollections.com/'),
+  title: 'Tirumala Collections',
   description: 'A modern e-commerce experience.',
 };
 

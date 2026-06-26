@@ -827,7 +827,7 @@ const TENANT_MAP: Record<string, Partial<TenantConfig>> = {
 };
 
 export function resolveTenantConfig(domain: string): TenantConfig {
-    const normalizedDomain = (domain === 'localhost' || domain === 'bavahomefoods' || domain === 'babaihomefoods' || domain === 'default' || domain === 'sareescollections') ? 'tirumalasarees' : domain;
+    const normalizedDomain = (domain === 'localhost' || domain === 'bavahomefoods' || domain === 'babaihomefoods' || domain === 'default' || domain === 'sareescollections' || domain === 'tirumalacollections.com' || domain === 'www.tirumalacollections.com' || domain === 'tirumalacollections') ? 'tirumalasarees' : domain;
     const specificConfig = TENANT_MAP[normalizedDomain] || {};
 
     const baseTheme = {
