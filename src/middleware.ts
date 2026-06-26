@@ -19,9 +19,7 @@ export function middleware(request: NextRequest) {
     if (companyDomain.match('www')) {
         companyDomain = hostHeader.split('.')[1];
     }
-    if (companyDomain === 'localhost' || companyDomain.match('mashallah')) {
-        companyDomain = 'tirumalasarees';
-    }
+
     // Clone the request headers and set the company domain
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-company-domain', companyDomain);
