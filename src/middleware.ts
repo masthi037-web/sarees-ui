@@ -18,6 +18,9 @@ export function middleware(request: NextRequest) {
     // Localhost fallback for development
     if (companyDomain.match('www')) {
         companyDomain = hostHeader.split('.')[1];
+    // Map domains to the actual company ID in the database
+    if (companyDomain === 'localhost' || companyDomain.match('mashallah')) {
+        companyDomain = 'tirumalasarees';
     }
 
     // Clone the request headers and set the company domain
